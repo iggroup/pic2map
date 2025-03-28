@@ -290,7 +290,7 @@ class Pic2Map(object):
             self.gcpMainWindow.resetToolSignal.connect(self.resetClickTool)
             self.gcpMainWindow.setCanvasExtentSignal.connect(self.setCanvasExtent)
             self.clickTool.canvasClicked.connect(self.newCanvasGCP)
-            self.gcpMainWindow.GoToMonoplotterButton.triggered.connect(self.goToMonoplotter)
+            # self.gcpMainWindow.GoToMonoplotterButton.triggered.connect(self.goToMonoplotter)
             self.gcpMainWindow.clearMapTool2.connect(self.clearMapTool)
             
             if fromVirtual3D:

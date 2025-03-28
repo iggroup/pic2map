@@ -43,7 +43,8 @@ from .D3View import D3_view
 # FIXME QtXml is no longer supported.
 from PyQt5 import QtXml
 import os, time
-        
+from math import ceil
+
 try:
     QString = str
 except NameError:
@@ -124,10 +125,10 @@ class GetGCPMainWindow(QMainWindow):
         self.ui.toolbarTable.addAction(loadGCPButton)
         loadGCPButton.triggered.connect(self.loadGCP)
         
-        url = ":/plugins/Pic2Map/toolbar13.png"
-        removereprojectedCrossectionsButton = QAction(QIcon(url), 'remove GCP reprojectedCrossections', self)
-        self.ui.toolbarTable.addAction(removereprojectedCrossectionsButton)
-        removereprojectedCrossectionsButton.triggered.connect(self.removereprojectedCrossections)
+        # url = ":/plugins/Pic2Map/toolbar13.png"
+        # removereprojectedCrossectionsButton = QAction(QIcon(url), 'remove GCP reprojectedCrossections', self)
+        # self.ui.toolbarTable.addAction(removereprojectedCrossectionsButton)
+        # removereprojectedCrossectionsButton.triggered.connect(self.removereprojectedCrossections)
         
         url = ":/plugins/Pic2Map/toolbar5.png"
         self.ZoomInButton = QAction(QIcon(url), 'Zoom In', self)
@@ -147,25 +148,25 @@ class GetGCPMainWindow(QMainWindow):
         self.PanButton.setCheckable(True)
         self.PanButton.triggered.connect(self.Pan)
         
-        url = ":/plugins/Pic2Map/toolbar8.png"
-        IconsViewButton = QAction(QIcon(url), 'Symbols Settings', self)
-        self.ui.toolbarTable.addAction(IconsViewButton)
-        IconsViewButton.triggered.connect(self.iconsView)
+        # url = ":/plugins/Pic2Map/toolbar8.png"
+        # IconsViewButton = QAction(QIcon(url), 'Symbols Settings', self)
+        # self.ui.toolbarTable.addAction(IconsViewButton)
+        # IconsViewButton.triggered.connect(self.iconsView)
         
         url = ":/plugins/Pic2Map/toolbar9.png"
         PoseButton = QAction(QIcon(url), 'Pose estimation', self)
         self.ui.toolbarPose.addAction(PoseButton)
         PoseButton.triggered.connect(self.PoseView)
         
-        url = ":/plugins/Pic2Map/toolbar10.png"
-        D3Button = QAction(QIcon(url), '3D-View', self)
-        self.ui.toolbarPose.addAction(D3Button)
-        D3Button.triggered.connect(self.call3DView)
+        # url = ":/plugins/Pic2Map/toolbar10.png"
+        # D3Button = QAction(QIcon(url), '3D-View', self)
+        # self.ui.toolbarPose.addAction(D3Button)
+        # D3Button.triggered.connect(self.call3DView)
         
-        url = ":/plugins/Pic2Map/toolbar11.png"
-        self.GoToMonoplotterButton = QAction(QIcon(url), 'Go to Monoplotter', self)
-        self.ui.toolbarPose.addAction(self.GoToMonoplotterButton)
-        self.GoToMonoplotterButton.setEnabled(False)
+        # url = ":/plugins/Pic2Map/toolbar11.png"
+        # self.GoToMonoplotterButton = QAction(QIcon(url), 'Go to Monoplotter', self)
+        # self.ui.toolbarPose.addAction(self.GoToMonoplotterButton)
+        # self.GoToMonoplotterButton.setEnabled(False)
     
         
         url = ":/plugins/Pic2Map/toolbar15.png"
@@ -387,7 +388,7 @@ class GetGCPMainWindow(QMainWindow):
                     self.lookat = lookat
                     self.upWorld = upWorld
                     self.ui.statusbar.showMessage('Pose loaded from KML file.')
-                    self.GoToMonoplotterButton.setEnabled(True)
+                    # self.GoToMonoplotterButton.setEnabled(True)
                     
                         
     def fixFocal(self, focalPixel):
@@ -535,10 +536,10 @@ class GetGCPMainWindow(QMainWindow):
                 self.paramPoseView = self.poseDialogue.result
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
                 self.XYZUsed = self.poseDialogue.xyzUsed
-                self.GCPErrorPos()
+                # self.GCPErrorPos()
                 self.getPositionInCanvas()
                 self.boolPose = True
-                self.GoToMonoplotterButton.setEnabled(True)
+                # self.GoToMonoplotterButton.setEnabled(True)
                 self.ui.statusbar.showMessage('You can save GCPs in .dat file or save pose estimation in KML file')
                 
                 
@@ -554,7 +555,7 @@ class GetGCPMainWindow(QMainWindow):
             self.roll = self.poseDialogue.roll
             self.paramPoseView = self.poseDialogue.result
             self.whoIsChecked = self.poseDialogue.whoIsChecked
-            self.GoToMonoplotterButton.setEnabled(True)
+            # self.GoToMonoplotterButton.setEnabled(True)
             
     
     def getPositionInCanvas(self):
@@ -1110,7 +1111,7 @@ class GetGCPMainWindow(QMainWindow):
         if row != None:
             rowText =  QGraphicsTextItem();
             font = QFont()
-            font.setPixelSize(rad*2)
+            font.setPixelSize(ceil(rad*2))
             rowText.setFont(font)
             pos = QPointF(posx+rad,posy-rad)
             rowText.setPos(pos)
