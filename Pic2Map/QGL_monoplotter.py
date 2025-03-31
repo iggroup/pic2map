@@ -13,7 +13,7 @@ from __future__ import print_function
 
 from builtins import str
 from past.utils import old_div
-from OpenGL.GL import *
+# from OpenGL.GL import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -21,8 +21,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtOpenGL import *
 from OpenGL.GLU import *
 from numpy import sqrt, cos, sin, array, pi, linalg, dot
-from OpenGL.GL.ARB.vertex_buffer_object import *
-from OpenGL.arrays import ArrayDatatype as ADT
+# from OpenGL.GL.ARB.vertex_buffer_object import *
+# from OpenGL.arrays import ArrayDatatype as ADT
 
 
 class QGLMonoplotter(QGLWidget):

@@ -28,14 +28,14 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtOpenGL import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
-from OpenGL.GLUT import *
+# from PyQt5.QtOpenGL import *
+# from OpenGL.GL import *
+# from OpenGL.GLU import *
+# from OpenGL.GLUT import *
 from numpy import  zeros, array, float32, uint32, shape, uint8, uint16, max
-from OpenGL.GL.framebufferobjects import *
-from OpenGL.GL.ARB.vertex_buffer_object import *
-from OpenGL.arrays import ArrayDatatype as ADT
+# from OpenGL.GL.framebufferobjects import *
+# from OpenGL.GL.ARB.vertex_buffer_object import *
+# from OpenGL.arrays import ArrayDatatype as ADT
 from osgeo import gdal, osr
 from PIL import Image
 from scipy import interpolate, misc
