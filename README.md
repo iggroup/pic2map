@@ -79,8 +79,8 @@ A technical introduction video can be found [here](https://www.youtube.com/watch
 
 * A picture (png, jpeg, tiff etc.)
 * A DEM in tiff format 
-* [Optional] An orthoimage to render the 3D image and detect GCPs
-* [Optional] Vector layer to be overlaid on the picture
+<!-- * [Optional] An orthoimage to render the 3D image and detect GCPs
+* [Optional] Vector layer to be overlaid on the picture -->
 
 High resolution DEM and orthoimage can slow down (or crash) the plugin. 
 Clip the DEM according to the image footprint and try to balance between performance and quality.
