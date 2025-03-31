@@ -13,7 +13,6 @@ from __future__ import print_function
 from builtins import map
 from builtins import range
 from past.utils import old_div
-from OpenGL.GL import *
 from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
