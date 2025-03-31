@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 from osgeo import ogr
 
 
-class viewOrtho_class(QGLWidget):
+class viewOrtho_class():
     getBound =  pyqtSignal(list)# Emit the bounding box for saving the drapped picture
     
     def __init__(self, pointBuffer, picture_name, modelview, projection, viewport,

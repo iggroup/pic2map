@@ -43,9 +43,9 @@ The plugin was tested with QGIS 3.40.
 ```
 python3 -m ensurepip
 ```
-- Install the piexif library:
+- Install the dependencies :
 ```
-pip3 install piexif
+pip3 install piexif matplotlib scipy
 ```
 
 ## Concepts
