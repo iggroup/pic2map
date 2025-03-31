@@ -138,7 +138,7 @@ The three next columns are the world coordinates (East, Nord and altitude).
 To fill the table, select a line and click on the scene to get image coordinates. 
 Click on its correspondence in the QGIS canvas to record the world coordinates.
 
-You can also get 3D coordinates from the 3D viewer with `ctrl + Left Click`.
+<!-- You can also get 3D coordinates from the 3D viewer with `ctrl + Left Click`. -->
 
 The fifth column is used to enable or disable a GCP for the pose estimation. 
 
