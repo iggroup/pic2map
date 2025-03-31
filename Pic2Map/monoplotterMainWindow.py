@@ -52,7 +52,7 @@ from matplotlib import colors
 #from PyQt4.QtOpenGL import *
 #from OpenGL.GLU import *
 #from OpenGL.GL.framebufferobjects import *
-from OpenGL.GL import *
+# from OpenGL.GL import *
 
 class MonoplotterMainWindow(QtWidgets.QMainWindow):
     
