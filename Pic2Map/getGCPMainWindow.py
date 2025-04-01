@@ -196,7 +196,9 @@ class GetGCPMainWindow(QMainWindow):
         self.model = GCPTableModel()#"GCPs.dat")#######
         self.ui.tableView.setModel(self.model)
         for i in range(0,8) :
-            self.ui.tableView.setColumnWidth(i,89)  
+            self.ui.tableView.setColumnWidth(i,89)
+        # Hide 3D errors for now
+        self.ui.tableView.setColumnHidden(6,True) 
         header = self.ui.tableView.horizontalHeader()
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.refreshPictureGCP) 
         self.ui.tableView.selectionModel().currentRowChanged.connect(self.refreshCanvasGCP) 
@@ -536,7 +538,7 @@ class GetGCPMainWindow(QMainWindow):
                 self.paramPoseView = self.poseDialogue.result
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
                 self.XYZUsed = self.poseDialogue.xyzUsed
-                # self.GCPErrorPos()
+                self.GCPErrorPos()
                 self.getPositionInCanvas()
                 self.boolPose = True
                 # self.GoToMonoplotterButton.setEnabled(True)
@@ -572,93 +574,35 @@ class GetGCPMainWindow(QMainWindow):
         self.poseCanvas.setPenWidth(self.iconSet.WC)
         
             
-    def GCPErrorPos(self):
-        # fill the last column of the table. 
-        # Errors are the distance in meter between a GCP and its the projection of the corresponding picture GCP
-        
-        # An openGL window is for projection purposes.
-        # Mathematically speaking, we don't need it because we already have the homography transformation.
-        # However, the pose estimation from homography matrix is not straightforward. The resulting pose is not
-        # equal to the homography matrix, even it may be very close. In some case, the pose can be very bad 
-        # even we get a pretty fine projection from homography. The projection trough openGL is much more
-        # comparable to the behavior of the monoplotter compared with the Homography matrix.
-        # This explain why we create an openGL window for projection instead of a simple homographic projection.
-        
-        resolution = QDesktopWidget().screenGeometry()
-        size = [0,0]
-        size[1] = old_div(resolution.height(),2)
-        size[0] = int(self.sizePicture[0]/float(self.sizePicture[1])*size[1])
+    def GCPErrorPos(self):      
+        nb_gcps = self.model.rowCount()
+        pen = QPen(self.iconSet.colorC, self.iconSet.WM, Qt.SolidLine)
 
-        self.refineViewQGL = D3_view(self.pointBuffer, None, self.roll, self.FOV, 0, self.pos, self.lookat, self.upWorld, True, [size[0],size[1]])
-        self.refineViewQGL.resize(size[0],size[1])
-        self.refineViewQGL.update()
-        self.refineViewQGL.show()
-        self.refineViewQGL.update()
-        #Read the table of GCP, get all UV and project them
-        rowCount = self.model.rowCount()
-        Alluv = zeros((rowCount, 2))
-        Allxyz = zeros((rowCount,3))
-        for row in range(0,rowCount):
-                if self.model.checkValid(row)==0:
-                    continue
-                index = self.model.index(row,0)
-                Alluv[row,0] = old_div(self.model.data(index),self.sizePicture[0])*size[0]
-                index = self.model.index(row,1)
-                Alluv[row,1] = old_div((-self.model.data(index)+self.sizePicture[1]),self.sizePicture[1])*size[1]
-                index = self.model.index(row,2)
-                Allxyz[row,0] = self.model.data(index)
-                index = self.model.index(row,3)
-                Allxyz[row,1] = self.model.data(index)
-                index = self.model.index(row,4)
-                Allxyz[row,2] = self.model.data(index)
+        # This is a dirty fix.
+        self.uvTableActivated = []
+        self.uvTableAll = []
 
-        error, xyzUnProjected = self.refineViewQGL.getErrorOnGCP(Alluv,Allxyz)
-        self.poseDialogue.xyzUnProjected = xyzUnProjected #Used for report on GCPs
-        rowCount = self.model.rowCount()
-        
-        self.uvTableAll = self.refineViewQGL.proj(Allxyz)
-        self.uvTableActivated = self.refineViewQGL.proj(self.XYZUsed)
-        
-        pixelError = [0]*rowCount
-        for row in range(0,rowCount):
-            if  self.model.checkValid(row)==0:
-                continue
-            index = self.model.index(row,0)
-            u = self.model.data(index)
-            index = self.model.index(row,1)
-            v = self.model.data(index)
-            
-            u2 = self.uvTableAll[row][0]*self.sizePicture[0]/float(size[0])
-            v2 = self.sizePicture[1]-self.uvTableAll[row][1]*self.sizePicture[1]/float(size[1])
-            pixelError[row] = sqrt((u-u2)**2+(v-v2)**2)
-        
-        # Error is added to the table
-        count = 0
-        for row in range(0,rowCount):
-            if  self.model.checkValid(row)==0:
-                continue
-            index = self.model.index(row, 6)
-            #self.model.setData(index, round(error[count],2))
-            self.model.setData(index, round(float(error[row]),2))
-            index2 = self.model.index(row, 7)
-            #self.model.setData(index2, round(pixelError[count],2))
-            self.model.setData(index2, round(float(pixelError[row]),2))
-            count +=1
+        index_prediction = 0
+        index_gcp = 0
+        for index_gcp in range(0, nb_gcps):
+            gcp_enabled = self.model.data(self.model.index(index_gcp,5)) == 1
+            u = self.model.data(self.model.index(index_gcp, 0))
+            v = self.model.data(self.model.index(index_gcp, 1))
+            self.uvTableAll.append([u, v])
 
-            
+            if gcp_enabled:
+                # Draw predictions in the picture
+                prediction = self.poseDialogue.predictions[index_prediction]
+                self.itemCross(prediction[0], prediction[1], pen, index_gcp)
+                self.uvTableActivated.append([prediction[0], prediction[1]])
+                # Update Pixel Errors
+                pixel_error = round(self.poseDialogue.errors[index_prediction], 0)
+                index_prediction += 1
+            else:
+                pixel_error = -1
+            self.model.setData(self.model.index(index_gcp,7), int(pixel_error))
+        self.poseDialogue.model = self.model
         self.refreshPictureGCP()
-        self.refineViewQGL.close()
-        
-        indice = 0
-        canvasNumber = 0
-        for x,y,z in xyzUnProjected:
-            while error[indice] == -1:
-                indice+=1
-            x0,z0 = Allxyz[indice,0],Allxyz[indice,1]
-            color = self.iconSet.colorM
-            self.drawCanvasGCPreprojectedCrossection(x,z,rowCount+canvasNumber,color,[x0,z0])
-            indice+=1
-            canvasNumber += 1
         
         #Used for report on GCPs
         self.poseDialogue.model = self.model
@@ -886,7 +830,7 @@ class GetGCPMainWindow(QMainWindow):
                 self.refreshPictureGCP()
                 self.refreshCanvasGCP()
                 
-            except :
+            except Exception as e:
                 QMessageBox.warning(self, "GCPs - Error","Failed to load: %s" % e)
 
     def addGCP(self):
@@ -992,16 +936,11 @@ class GetGCPMainWindow(QMainWindow):
             size[1] = old_div(resolution.height(),2)
             size[0] = int(self.sizePicture[0]/float(self.sizePicture[1])*size[1])
             for u,v in self.uvTableAll:
-                u = u*self.sizePicture[0]/float(size[0])
-                v = self.sizePicture[1]-v*self.sizePicture[1]/float(size[1])
                 pen = QPen(QColor(240, 160, 240) , self.iconSet.WM, Qt.SolidLine)
                 self.itemCross(u,v, pen)
             for u,v in self.uvTableActivated:
-                u = u*self.sizePicture[0]/float(size[0])
-                v = self.sizePicture[1]-v*self.sizePicture[1]/float(size[1])
                 pen = QPen(self.iconSet.colorC , self.iconSet.WM, Qt.SolidLine)
                 self.itemCross(u,v, pen)
-                #self.itemLine(u,v)
         
     def refreshCanvasGCP(self):
         if self.model and self.goToMonoplot == False :##############

@@ -31,7 +31,7 @@ class ReportDialog(QtWidgets.QDialog):
     #projections or back projections, you can do it here.
     #
     #When the Pose dialog window is closed, the errors 
-    def __init__(self, model, Qxx, paramBool, paramList, pathToData, xyzUnProjected):
+    def __init__(self, model, Qxx, paramBool, paramList, pathToData, xyzUnProjected, error_report):
         QtWidgets.QDialog.__init__(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setWindowModality(Qt.ApplicationModal)
@@ -46,6 +46,7 @@ class ReportDialog(QtWidgets.QDialog):
         paramList[4] = (paramList[4]*180)/pi
         paramList[5] = (paramList[5]*180)/pi
         self.model = model
+        self.error_report = error_report
         rowCount = model.rowCount()
         errorsPixels = zeros((rowCount,1))
         # errors3D = []
@@ -63,12 +64,12 @@ class ReportDialog(QtWidgets.QDialog):
             errorsPixels[row] = model.data(index)
         # if len(errors3D)>0:
         text = ''
-        # text += 'Projections errors:'
+        text += 'Projections errors:'
         
-        # text += '\n   mean: ' + str(round(mean(errorsPixels),2)) + ' [pixel]'
-        # text += '\n   min: ' + str(min(errorsPixels)) + ' [pixel]'
-        # text += '\n   max: ' + str(max(errorsPixels)) + ' [pixel]'
-        # text += '\n   std: ' + str(round(std(errorsPixels),2)) + ' [pixel]'
+        text += '\n   mean: ' + str(round(error_report['mean'],2)) + ' [pixel]'
+        text += '\n   min: ' + str(error_report['min']) + ' [pixel]'
+        text += '\n   max: ' + str(error_report['max']) + ' [pixel]'
+        text += '\n   std: ' + str(round(error_report['std'],2)) + ' [pixel]\n \n'
         # text += '\n\n3D reprojections errors:'
         # text += '\n   mean: ' + str(round(mean(errors3D),2)) + ' [m]'
         # text += '\n   min: ' + str(min(errors3D)) + ' [m]'

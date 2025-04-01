@@ -48,7 +48,7 @@ class ExifInfo(QDialog):
             except ValueError:
                 QMessageBox.warning(self, "Error","Float format not valid")
             else:
-                FocalLengthMM = old_div(self.FocalLength[0],self.FocalLength[1])
+                FocalLengthMM = old_div(self.FocalLength.numerator,self.FocalLength.denominator)
                 focalPixel = round(old_div(FocalLengthMM,sensorDiagFloat)*self.diag,2)
                 self.ui_exif_info.lineFocalPixel.setText(str(focalPixel))
                 self.fixFocalSignal.emit(focalPixel)

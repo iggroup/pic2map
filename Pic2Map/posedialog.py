@@ -98,7 +98,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.move(qr.topLeft())
     
     def reportOnGCPs(self):
-        self.report = ReportDialog(self.model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected)
+        self.report = ReportDialog(self.model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
@@ -413,8 +413,12 @@ class Pose_dialog(QtWidgets.QDialog):
             We take the fixed parameters from the dialog box and give the initial
             guess from the DLT to free parameters. 
             """
-            resultLS, Lproj, vect, up = self.LS(xyz,uv1,parameter_bool,parameter_list,resultInitialization)
-            
+            resultLS, Lproj, vect, up, predictions, error_report, errors = self.LS(xyz,uv1,parameter_bool,parameter_list,resultInitialization)
+
+            self.predictions = predictions
+            self.error_report = error_report
+            self.errors = errors
+
             k = 0
 
             result = [0]*9
@@ -656,8 +660,21 @@ class Pose_dialog(QtWidgets.QDialog):
         #not_awesome_vector = array([0,0,-focal])
         #almost_awesome_vector = dot(linalg.inv(R),not_awesome_vector.T)
         #awesome_vector = array(almost_awesome_vector)+array([x0,y0,z0])
-        
-        return x, L1p, lookat, upWorld#awesome_vector
+
+        # predictions contains npoints predicted points from LS
+        predictions = zeros(shape=(npoints, 2))
+        for i in range(npoints):
+            predictions[i, :] = self.dircal(x,abscissa[i,:],x_fix,PARAM)
+
+        # Compute the error
+        error_report = {}
+        errors = linalg.norm(observations - predictions, axis=1)
+        error_report['mean'] = mean(errors)
+        error_report['std'] = std(errors)
+        error_report['min'] = min(errors)
+        error_report['max'] = max(errors)
+
+        return x, L1p, lookat, upWorld, predictions, error_report, errors
     
     def CoeftoMatrixProjection(self,x):
         L1p = zeros((4,4))

@@ -376,7 +376,7 @@ class Pic2Map(object):
             # This function is used at initialization.
             # Arrays are created here for openGL. The normal calculation can take some time (ca. 1sec for 100'000 pixels)
             self.buffers = Buffers(self.DEM_name, self.dem_box, self.useOrtho, self.ortho_name, self.ortho_box)
-            self.buffers.getBuffer()
+            # self.buffers.getBuffer()
             self.buffers.close()
             
     def clickOnMonoplotter(self,customEvent):
