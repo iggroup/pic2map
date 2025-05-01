@@ -43,7 +43,7 @@ class Pose_dialog(QtWidgets.QDialog):
     update = pyqtSignal()
     needRefresh = pyqtSignal()
     importUpdate = pyqtSignal()
-    def __init__(self, model: GCPTableModel, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
+    def __init__(self, gcp_table_model: GCPTableModel, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
         #QtGui.QDialog.__init__(self)
         QtWidgets.QDialog.__init__(self)
         self.uiPose = Ui_Pose()
@@ -51,7 +51,7 @@ class Pose_dialog(QtWidgets.QDialog):
         #self.center()
         self.done = False
         self.sizePicture = sizePicture
-        self.model = model
+        self.gcp_table_model = gcp_table_model
         self.whoIsChecked = whoIsChecked
         self.pathToData = pathToData
         self.xyzUnProjected = None
@@ -100,7 +100,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.move(qr.topLeft())
     
     def reportOnGCPs(self):
-        self.report = ReportDialog(self.model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
+        self.report = ReportDialog(self.gcp_table_model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
@@ -211,40 +211,40 @@ class Pose_dialog(QtWidgets.QDialog):
         Column 1 and 2 are seen has observationservations.
         Columns 3,4,5 form the ordinate on which the observationservation in done.
         """
-        model = self.model
-        rowCount = model.rowCount()
-        rowCountEnable = 0
-        for row in range(0,rowCount):
-            if model.data(model.index(row,5)) == 1:
-                rowCountEnable +=1
+        gcp_table_model: GCPTableModel = self.gcp_table_model
+        total_gcps: int = gcp_table_model.rowCount()
+        total_enabled_gcps = 0
+        for row_idx in range(0, total_gcps):
+            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 1:
+                total_enabled_gcps += 1
 
-        xyz = zeros((rowCountEnable, 3))
-        uv1 = zeros((rowCountEnable,2))
-        indice = 0
-        for row in range(0,rowCount):
-                if model.checkValid(row)==0:
-                    continue
-                if model.data(model.index(row,5)) == 0:
-                    continue
-                index = model.index(row, 0)
-                uv1[indice,0] = model.data(index)
-                index = model.index(row,1)
-                uv1[indice,1] = model.data(index)
-                index = model.index(row,2)
-                xyz[indice,0] = -model.data(index)
-                index = model.index(row,3)
-                xyz[indice,1] = model.data(index)
-                index = model.index(row,4)
-                xyz[indice,2] = model.data(index)
-                indice +=1
-                
-        # self.xyzUsed are GCP which have 6th column enabled 
-        self.xyzUsed = array([-1*xyz[:,0],xyz[:,1],xyz[:,2]]).T
+        gcp_xyz = zeros((total_enabled_gcps, 3))
+        gcp_uv = zeros((total_enabled_gcps,2))
+        gcp_idx = 0
+        for row_idx in range(0, total_gcps):
+            if gcp_table_model.checkValid(row_idx)==0:
+                continue
+            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 0:
+                continue
+            index = gcp_table_model.index(row_idx, 0)
+            gcp_uv[gcp_idx,0] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,1)
+            gcp_uv[gcp_idx,1] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,2)
+            gcp_xyz[gcp_idx,0] = -gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,3)
+            gcp_xyz[gcp_idx,1] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,4)
+            gcp_xyz[gcp_idx,2] = gcp_table_model.data(index)
+            gcp_idx +=1
+
+        # self.gcp_xyz_used are GCP which have 6th column enabled 
+        self.gcp_xyz_used = array([-1*gcp_xyz[:,0],gcp_xyz[:,1],gcp_xyz[:,2]]).T
         
         table = self.findChildren(QtWidgets.QLineEdit)
         parameter_bool = zeros((9))
         parameter_list = []
-        indice = 0
+        parameter_idx = 0
         """
         Read the list of Parameter of camera
         0. X Position 
@@ -260,51 +260,48 @@ class Pose_dialog(QtWidgets.QDialog):
         
         #For each radio button (Free, Fixed, Apriori) for each parameters
         for radioButton in self.findChildren(QtWidgets.QRadioButton):
-            
-            
+
             if (radioButton.text() == "Free"):
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(1) # The parameters is free
+                    parameter_bool[parameter_idx] = int(1) # The parameters is free
                     parameter_list.append(0)
                      
             elif (radioButton.text() == "Fixed"):
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(0) #The parameters is fixed
+                    parameter_bool[parameter_idx] = int(0) #The parameters is fixed
 
-                    value = float(table[indice].text())
-                    if indice == 0:
+                    value = float(table[parameter_idx].text())
+                    if parameter_idx == 0:
                         value = -value
-                    if indice > 2 and indice < 6:
+                    if parameter_idx > 2 and parameter_idx < 6:
                         value *=  old_div(pi,180)  #angle are displayed in degree
-                    if indice == 7:
+                    if parameter_idx == 7:
                         value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if indice == 8:
+                    if parameter_idx == 8:
                         value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
                     parameter_list.append(value)
                     
             elif (radioButton.text() == "Apriori"): #Apriori
-            
-
                 
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(2) #The parameters is aprior
-                    
-                    value = float(table[indice].text())
-                    if indice == 0:
+                    parameter_bool[parameter_idx] = int(2) #The parameters is aprior
+
+                    value = float(table[parameter_idx].text())
+                    if parameter_idx == 0:
                         value = -value
-                    if indice > 2 and indice < 6:
+                    if parameter_idx > 2 and parameter_idx < 6:
                         value *=  old_div(pi,180)  #angle are displayed in degree
-                    if indice == 7:
+                    if parameter_idx == 7:
                         value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if indice == 8:
+                    if parameter_idx == 8:
                         value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
                     parameter_list.append(value)
                 
                 #Incrementation of the indice of the parameters (each 3 button)
-                indice += 1
+                parameter_idx += 1
 
         if smapshot_georeferencer:
             # Convert gcp location from the current CS to EPSG:4326
@@ -315,9 +312,9 @@ class Pose_dialog(QtWidgets.QDialog):
             result = [0] * 9
             lookAt = [0, 0, 0]
             upWorld = [0, 0, 0]
-            predictions = [(0, 0)] * rowCountEnable
+            predictions = [(0, 0)] * total_enabled_gcps
             error_report = {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
-            errors = errors = [0] * rowCountEnable
+            errors = errors = [0] * total_enabled_gcps
 
         else:
             
@@ -369,16 +366,16 @@ class Pose_dialog(QtWidgets.QDialog):
 
             try:
                 #Check if consistency of inputs
-                if uv1.shape[0] != xyz.shape[0]:
+                if gcp_uv.shape[0] != gcp_xyz.shape[0]:
                     raise ValueError
                     
                 #Check if there is at least 4 GCP
-                elif (uv1.shape[0] < 4):
-                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (uv1.shape[0]))
+                elif (gcp_uv.shape[0] < 4):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv.shape[0]))
                     
                 #Check if there is at least 4 GCP
-                elif (uv1.shape[0] < 6) and any(parameter_bool[0:7]==1):
-                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (uv1.shape[0]))
+                elif (gcp_uv.shape[0] < 6) and any(parameter_bool[0:7]==1):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv.shape[0]))
                     
 
                 #Check if there is at least 6 GCP
@@ -392,19 +389,19 @@ class Pose_dialog(QtWidgets.QDialog):
 
             except ValueError:
                 QMessageBox.warning(self, "GCP - Error",
-                        'xyz (%d points) and uv (%d points) have different number of points.' %(xyz.shape[0], uv.shape[0]))
+                        'xyz (%d points) and uv (%d points) have different number of points.' %(gcp_xyz.shape[0], gcp_uv.shape[0]))
                 self.done = False
 
             else:
                 
-                if (xyz.shape[0] >= 6):
+                if (gcp_xyz.shape[0] >= 6):
                     
                     if any(parameter_bool[0:7]==1):
                         #There are free values a DLT is performed
                         print ('Position is fixed but orientation is unknown')
                         print ('The orientation is initialized with DLT')
                         
-                        resultInitialization, L, v, upWorld = self.DLTMain(xyz,uv1)
+                        resultInitialization, L, v, upWorld = self.DLTMain(gcp_xyz,gcp_uv)
                     else:
                         #There is only fixed or apriori values LS is performed
                         print ('There is only fixed or apriori values LS is performed')
@@ -424,7 +421,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 We take the fixed parameters from the dialog box and give the initial
                 guess from the DLT to free parameters. 
                 """
-                resultLS, Lproj, lookAt, upWorld, predictions, error_report, errors = self.LS(xyz,uv1,parameter_bool,parameter_list,resultInitialization)
+                resultLS, Lproj, lookAt, upWorld, predictions, error_report, errors = self.LS(gcp_xyz,gcp_uv,parameter_bool,parameter_list,resultInitialization)
 
                 result = [0]*9
                 # Length of resultLS is [9 - length of parameter_list]
@@ -438,22 +435,22 @@ class Pose_dialog(QtWidgets.QDialog):
                         result[i]=parameter_list[i]
 
         # Set result in the dialog box
-        indice = 0
+        gcp_idx = 0
         self.poseLineEdit = []
         for line in self.findChildren(QtWidgets.QLineEdit):
-            value = result[indice]
-            if indice == 0:
+            value = result[gcp_idx]
+            if gcp_idx == 0:
                 value *= -1
-            if indice > 2 and indice < 6:
+            if gcp_idx > 2 and gcp_idx < 6:
                 value *= old_div(180,pi)
-            if indice == 7:
+            if gcp_idx == 7:
                 value-=self.sizePicture[0]/2.0
-            if indice == 8:
+            if gcp_idx == 8:
                 value-=self.sizePicture[1]/2.0
             text = str(round(value,3))
             line.setText(text)
             self.poseLineEdit.append(text)
-            indice +=1
+            gcp_idx +=1
         
         # Set the variable for next computation and for openGL pose
         self.parameter_bool = parameter_bool
@@ -474,10 +471,10 @@ class Pose_dialog(QtWidgets.QDialog):
             self.FOV = 0 
         self.roll = arcsin(-sin(result[3])*sin(result[5]))
         
-        indice = 0
+        gcp_idx = 0
         for radio in self.findChildren(QtWidgets.QRadioButton):
-            self.whoIsChecked[indice] = radio.isChecked()
-            indice +=1
+            self.whoIsChecked[gcp_idx] = radio.isChecked()
+            gcp_idx +=1
         # Update projected and reprojected points for drawing
         self.update.emit()
         # Create the report on GCP

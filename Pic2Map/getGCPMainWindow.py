@@ -537,7 +537,7 @@ class GetGCPMainWindow(QMainWindow):
                 self.roll = self.poseDialogue.roll
                 self.paramPoseView = self.poseDialogue.result
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
-                self.XYZUsed = self.poseDialogue.xyzUsed
+                self.XYZUsed = self.poseDialogue.gcp_xyz_used
                 self.GCPErrorPos()
                 self.getPositionInCanvas()
                 self.boolPose = True
@@ -601,11 +601,11 @@ class GetGCPMainWindow(QMainWindow):
             else:
                 pixel_error = -1
             self.model.setData(self.model.index(index_gcp,7), int(pixel_error))
-        self.poseDialogue.model = self.model
+        self.poseDialogue.gcp_table_model = self.model
         self.refreshPictureGCP()
         
         #Used for report on GCPs
-        self.poseDialogue.model = self.model
+        self.poseDialogue.gcp_table_model = self.model
             
 
     def iconsView(self):
