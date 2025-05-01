@@ -1,0 +1,3 @@
+[submodule "Pic2Map/smapshotgeoreferencer"]
+	path = Pic2Map/smapshotgeoreferencer
+	url = https://github.com/MediaComem/smapshot-georeferencer.git
