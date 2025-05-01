@@ -304,11 +304,22 @@ class Pose_dialog(QtWidgets.QDialog):
                 parameter_idx += 1
 
         if smapshot_georeferencer:
-            # Convert gcp location from the current CS to EPSG:4326
+            # Convert gcp location from the current Crs to EPSG:4326
+            canvas = QgsMapCanvas()
+            source_crs = canvas.mapSettings().destinationCrs()
+            target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+            transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
+            transformed_gcp_points = []
+            for coordinate in gcp_xyz:
+                x, y, z = coordinate
+                source_point = QgsPointXY(x, y)
+                target_point = transform.transform(source_point)
+                transformed_gcp_points.append([target_point.x, target_point.y, z])
+            transformed_gcp_xyz = array(transformed_gcp_points)
 
             # Apply the smapshot georeferencer
 
-            # Convert the computed pose location from EPSG:4326 to the current CS
+            # Convert the computed pose location from EPSG:4326 to the current Crs
             result = [0] * 9
             lookAt = [0, 0, 0]
             upWorld = [0, 0, 0]
