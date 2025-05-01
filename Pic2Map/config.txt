@@ -1,1 +1,0 @@
-/root/projects/pic2map/Pic2Map/dataTest

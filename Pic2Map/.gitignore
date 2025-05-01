@@ -23,3 +23,6 @@
 
 # vscode
 .vscode/settings.json
+
+# config file
+config.txt
