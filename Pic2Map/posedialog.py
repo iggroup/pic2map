@@ -38,6 +38,7 @@ from qgis.gui import *
 from qgis.utils import iface
 import os
 from .GCPs import GCPTableModel
+import smapshotgeoreferencer.georeferencerUtils as georef_utils
 
 class Pose_dialog(QtWidgets.QDialog):
     update = pyqtSignal()
@@ -309,15 +310,59 @@ class Pose_dialog(QtWidgets.QDialog):
             source_crs = canvas.mapSettings().destinationCrs()
             target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
             transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
-            transformed_gcp_points = []
-            for coordinate in gcp_xyz:
-                x, y, z = coordinate
+            gcp_smapshot_list = []
+            for index, gcp_xyz in enumerate(gcp_xyz):
+                x, y, z = gcp_xyz
                 source_point = QgsPointXY(x, y)
                 target_point = transform.transform(source_point)
-                transformed_gcp_points.append([target_point.x, target_point.y, z])
-            transformed_gcp_xyz = array(transformed_gcp_points)
+                gcp_smapshot_list.append({
+                    "longitude": target_point.x,
+                    "latitude": target_point.y,
+                    "altitude": z,
+                    "x": gcp_uv[index, 0],
+                    "y": gcp_uv[index, 1]
+                })
 
-            # Apply the smapshot georeferencer
+            # Free inputs
+            lng0 = 0
+            lat0 = 0
+            alt0 = 0
+            azimuthDeg = 0
+            tiltDeg = 0
+            rollDeg = 0
+
+            # Image data
+            image_width = 1024
+            image_height = 763
+            focal = georef_utils.computeDiagonal(image_width, image_height)
+
+            (
+                lngComp,
+                latComp,
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focalComp,
+                pComp,
+                gcps,
+                imageCoordinates,
+                method,
+            ) = georef_utils.georeferencer(
+                lng0,
+                lat0,
+                alt0,
+                azimuthDeg,
+                tiltDeg,
+                rollDeg,
+                focal,
+                image_width,
+                image_height,
+                gcp_smapshot_list,
+                plotBool=False,
+            )
+
+            print(f"RESULTS {lngComp}, {latComp}, {altComp} --- {azimuthComp}, {tiltComp}, {rollComp}")
 
             # Convert the computed pose location from EPSG:4326 to the current Crs
             result = [0] * 9
