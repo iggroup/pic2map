@@ -38,7 +38,7 @@ from qgis.gui import *
 from qgis.utils import iface
 import os
 from .GCPs import GCPTableModel
-import smapshotgeoreferencer.georeferencerUtils as georef_utils
+from .smapshotgeoreferencer import georeferencerUtils as georef_utils
 
 class Pose_dialog(QtWidgets.QDialog):
     update = pyqtSignal()
@@ -219,8 +219,8 @@ class Pose_dialog(QtWidgets.QDialog):
             if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 1:
                 total_enabled_gcps += 1
 
-        gcp_xyz = zeros((total_enabled_gcps, 3))
-        gcp_uv = zeros((total_enabled_gcps,2))
+        gcp_xyz_array = zeros((total_enabled_gcps, 3))
+        gcp_uv_array = zeros((total_enabled_gcps,2))
         gcp_idx = 0
         for row_idx in range(0, total_gcps):
             if gcp_table_model.checkValid(row_idx)==0:
@@ -228,19 +228,19 @@ class Pose_dialog(QtWidgets.QDialog):
             if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 0:
                 continue
             index = gcp_table_model.index(row_idx, 0)
-            gcp_uv[gcp_idx,0] = gcp_table_model.data(index)
+            gcp_uv_array[gcp_idx,0] = gcp_table_model.data(index)
             index = gcp_table_model.index(row_idx,1)
-            gcp_uv[gcp_idx,1] = gcp_table_model.data(index)
+            gcp_uv_array[gcp_idx,1] = gcp_table_model.data(index)
             index = gcp_table_model.index(row_idx,2)
-            gcp_xyz[gcp_idx,0] = -gcp_table_model.data(index)
+            gcp_xyz_array[gcp_idx,0] = gcp_table_model.data(index)
             index = gcp_table_model.index(row_idx,3)
-            gcp_xyz[gcp_idx,1] = gcp_table_model.data(index)
+            gcp_xyz_array[gcp_idx,1] = gcp_table_model.data(index)
             index = gcp_table_model.index(row_idx,4)
-            gcp_xyz[gcp_idx,2] = gcp_table_model.data(index)
+            gcp_xyz_array[gcp_idx,2] = gcp_table_model.data(index)
             gcp_idx +=1
 
         # self.gcp_xyz_used are GCP which have 6th column enabled 
-        self.gcp_xyz_used = array([-1*gcp_xyz[:,0],gcp_xyz[:,1],gcp_xyz[:,2]]).T
+        self.gcp_xyz_used = array([-1*gcp_xyz_array[:,0],gcp_xyz_array[:,1],gcp_xyz_array[:,2]]).T
         
         table = self.findChildren(QtWidgets.QLineEdit)
         parameter_bool = zeros((9))
@@ -304,37 +304,41 @@ class Pose_dialog(QtWidgets.QDialog):
                 #Incrementation of the indice of the parameters (each 3 button)
                 parameter_idx += 1
 
+        # We fix anyway the central point. Future work can take it into account. It is therefore used here as parameter.
+        #U0
+        parameter_bool[7] = 0
+        parameter_list.append(old_div(self.sizePicture[0],2))
+        #V0
+        parameter_bool[8] = 0
+        parameter_list.append(old_div(self.sizePicture[1],2))
+
         if smapshot_georeferencer:
             # Convert gcp location from the current Crs to EPSG:4326
-            canvas = QgsMapCanvas()
-            source_crs = canvas.mapSettings().destinationCrs()
+            source_crs = QgsProject.instance().crs()
             target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
             transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
+            reverse_transform = QgsCoordinateTransform(target_crs, source_crs, QgsProject.instance())
             gcp_smapshot_list = []
-            for index, gcp_xyz in enumerate(gcp_xyz):
-                x, y, z = gcp_xyz
-                source_point = QgsPointXY(x, y)
-                target_point = transform.transform(source_point)
+            for gcp_idx in range(total_enabled_gcps):
+                x, y, z = gcp_xyz_array[gcp_idx]
+                point_xy = QgsPointXY(x, y)
+                point_lnglat = transform.transform(point_xy)
                 gcp_smapshot_list.append({
-                    "longitude": target_point.x,
-                    "latitude": target_point.y,
+                    "longitude": point_lnglat.x(),
+                    "latitude": point_lnglat.y(),
                     "altitude": z,
-                    "x": gcp_uv[index, 0],
-                    "y": gcp_uv[index, 1]
+                    "x": gcp_uv_array[gcp_idx, 0],
+                    "y": gcp_uv_array[gcp_idx, 1]
                 })
 
-            # Free inputs
+            # Initial data (free)
             lng0 = 0
             lat0 = 0
             alt0 = 0
             azimuthDeg = 0
             tiltDeg = 0
             rollDeg = 0
-
-            # Image data
-            image_width = 1024
-            image_height = 763
-            focal = georef_utils.computeDiagonal(image_width, image_height)
+            focal = georef_utils.computeDiagonal(self.sizePicture[0], self.sizePicture[1])
 
             (
                 lngComp,
@@ -345,7 +349,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 rollComp,
                 focalComp,
                 pComp,
-                gcps,
+                gcp_comp_list,
                 imageCoordinates,
                 method,
             ) = georef_utils.georeferencer(
@@ -356,24 +360,35 @@ class Pose_dialog(QtWidgets.QDialog):
                 tiltDeg,
                 rollDeg,
                 focal,
-                image_width,
-                image_height,
+                self.sizePicture[0],
+                self.sizePicture[1],
                 gcp_smapshot_list,
                 plotBool=False,
             )
 
-            print(f"RESULTS {lngComp}, {latComp}, {altComp} --- {azimuthComp}, {tiltComp}, {rollComp}")
+            point_lnglat = QgsPointXY(lngComp, latComp)
+            point_xy = reverse_transform.transform(point_lnglat)
+
+            print(f"RESULTS {point_xy.x()}, {point_xy.y()}, {altComp} --- {azimuthComp}, {tiltComp}, {rollComp}")
 
             # Convert the computed pose location from EPSG:4326 to the current Crs
-            result = [0] * 9
+            resultLS = [
+                point_xy.x(),
+                point_xy.y(),
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focal
+            ]
             lookAt = [0, 0, 0]
             upWorld = [0, 0, 0]
-            predictions = [(0, 0)] * total_enabled_gcps
+            predictions = [[gcp["x"], gcp["y"]] for gcp in gcp_comp_list]
             error_report = {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
             errors = errors = [0] * total_enabled_gcps
 
         else:
-            
+
             if list(parameter_bool[:7]) == [0]*7 : 
 
                 tilt = parameter_list[3]
@@ -412,26 +427,18 @@ class Pose_dialog(QtWidgets.QDialog):
                 self.importUpdate.emit()
                 return
 
-            # We fix anyway the central point. Future work can take it into account. It is therefore used here as parameter.
-            #U0
-            parameter_bool[7] = 0
-            parameter_list.append(old_div(self.sizePicture[0],2))
-            #V0
-            parameter_bool[8] = 0
-            parameter_list.append(old_div(self.sizePicture[1],2))
-
             try:
                 #Check if consistency of inputs
-                if gcp_uv.shape[0] != gcp_xyz.shape[0]:
+                if gcp_uv_array.shape[0] != gcp_xyz_array.shape[0]:
                     raise ValueError
                     
                 #Check if there is at least 4 GCP
-                elif (gcp_uv.shape[0] < 4):
-                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv.shape[0]))
+                elif (gcp_uv_array.shape[0] < 4):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv_array.shape[0]))
                     
                 #Check if there is at least 4 GCP
-                elif (gcp_uv.shape[0] < 6) and any(parameter_bool[0:7]==1):
-                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv.shape[0]))
+                elif (gcp_uv_array.shape[0] < 6) and any(parameter_bool[0:7]==1):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv_array.shape[0]))
                     
 
                 #Check if there is at least 6 GCP
@@ -445,19 +452,19 @@ class Pose_dialog(QtWidgets.QDialog):
 
             except ValueError:
                 QMessageBox.warning(self, "GCP - Error",
-                        'xyz (%d points) and uv (%d points) have different number of points.' %(gcp_xyz.shape[0], gcp_uv.shape[0]))
+                        'xyz (%d points) and uv (%d points) have different number of points.' %(gcp_xyz_array.shape[0], gcp_uv_array.shape[0]))
                 self.done = False
 
             else:
                 
-                if (gcp_xyz.shape[0] >= 6):
+                if (gcp_xyz_array.shape[0] >= 6):
                     
                     if any(parameter_bool[0:7]==1):
                         #There are free values a DLT is performed
                         print ('Position is fixed but orientation is unknown')
                         print ('The orientation is initialized with DLT')
                         
-                        resultInitialization, L, v, upWorld = self.DLTMain(gcp_xyz,gcp_uv)
+                        resultInitialization, L, v, upWorld = self.DLTMain(gcp_xyz_array,gcp_uv_array)
                     else:
                         #There is only fixed or apriori values LS is performed
                         print ('There is only fixed or apriori values LS is performed')
@@ -477,18 +484,19 @@ class Pose_dialog(QtWidgets.QDialog):
                 We take the fixed parameters from the dialog box and give the initial
                 guess from the DLT to free parameters. 
                 """
-                resultLS, Lproj, lookAt, upWorld, predictions, error_report, errors = self.LS(gcp_xyz,gcp_uv,parameter_bool,parameter_list,resultInitialization)
+                resultLS, Lproj, lookAt, upWorld, predictions, error_report, errors = self.LS(gcp_xyz_array,gcp_uv_array,parameter_bool,parameter_list,resultInitialization)
 
-                result = [0]*9
-                # Length of resultLS is [9 - length of parameter_list]
-                # We reconstruct the "result" vector which contains the output parameters
-                k = 0
-                for i in range(9):
-                    if (parameter_bool[i]==1) or (parameter_bool[i]==2):
-                        result[i] = resultLS[k]
-                        k +=1
-                    else:
-                        result[i]=parameter_list[i]
+        # Compute the result vector
+        result = [0]*9
+        # Length of resultLS is [9 - length of parameter_list]
+        # We reconstruct the "result" vector which contains the output parameters
+        k = 0
+        for i in range(9):
+            if (parameter_bool[i]==1) or (parameter_bool[i]==2):
+                result[i] = resultLS[k]
+                k +=1
+            else:
+                result[i]=parameter_list[i]
 
         # Set result in the dialog box
         gcp_idx = 0
