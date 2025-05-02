@@ -383,9 +383,9 @@ class Pose_dialog(QtWidgets.QDialog):
             ]
             lookAt = [0, 0, 0]
             upWorld = [0, 0, 0]
-            predictions = [[gcp["x"], gcp["y"]] for gcp in gcp_comp_list]
+            predictions = [[gcp_comp["xReproj"], gcp_comp["yReproj"]] for gcp_comp in gcp_comp_list]
             error_report = {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
-            errors = errors = [0] * total_enabled_gcps
+            errors = errors = [gcp_comp["dxy"] for gcp_comp in gcp_comp_list]
 
         else:
 
@@ -497,6 +497,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 k +=1
             else:
                 result[i]=parameter_list[i]
+        result[0] *= -1
 
         # Set result in the dialog box
         gcp_idx = 0
@@ -505,7 +506,7 @@ class Pose_dialog(QtWidgets.QDialog):
             value = result[gcp_idx]
             if gcp_idx == 0:
                 value *= -1
-            if gcp_idx > 2 and gcp_idx < 6:
+            if not smapshot_georeferencer and gcp_idx > 2 and gcp_idx < 6:
                 value *= old_div(180,pi)
             if gcp_idx == 7:
                 value-=self.sizePicture[0]/2.0
@@ -541,11 +542,15 @@ class Pose_dialog(QtWidgets.QDialog):
             gcp_idx +=1
         # Update projected and reprojected points for drawing
         self.update.emit()
+
+        #########################
+        # TEMPORARY DEACTIVATED #
+        #########################
         # Create the report on GCP
-        self.reportOnGCPs()
-        if self.report.inconsistent == False :
-            self.actionOnButton("E", True)
-            self.actionOnButton("C", "G")
+        # self.reportOnGCPs()
+        # if self.report.inconsistent == False :
+        #     self.actionOnButton("E", True)
+        #     self.actionOnButton("C", "G")
 
     def refreshButton(self):
         if self.buttonColor == "G":
