@@ -1,0 +1,14 @@
+# Byte-compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# vscode
+.vscode/
+
+# config file
+config.txt
+
+# deployment archives
+/*.zip
