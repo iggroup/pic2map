@@ -200,13 +200,14 @@ class Ui_Pose(object):
         self.commandLinkVBoxLayout = QtWidgets.QVBoxLayout()
         self.gridLayout.addLayout(self.commandLinkVBoxLayout, 2, 3, 1, 2)
 
-        self.commandLinkButton = QtWidgets.QCommandLinkButton(PoseDialog)
-        self.commandLinkButton.setObjectName(_fromUtf8("commandLinkButton"))
-        self.commandLinkVBoxLayout.addWidget(self.commandLinkButton)
+        self.legacyPoseEstimationButton = QtWidgets.QCommandLinkButton(PoseDialog)
+        self.legacyPoseEstimationButton.setObjectName(_fromUtf8("commandLinkButton"))
+        # Hide the default pose estimation before proper removal
+        # self.commandLinkVBoxLayout.addWidget(self.poseEstimationDefaultButton)
 
-        self.commandLinkButton2 = QtWidgets.QCommandLinkButton(PoseDialog)
-        self.commandLinkButton2.setObjectName(_fromUtf8("commandLinkButton2"))
-        self.commandLinkVBoxLayout.addWidget(self.commandLinkButton2)
+        self.poseEstimationButton = QtWidgets.QCommandLinkButton(PoseDialog)
+        self.poseEstimationButton.setObjectName(_fromUtf8("commandLinkButton2"))
+        self.commandLinkVBoxLayout.addWidget(self.poseEstimationButton)
 
         self.exifButton = QtWidgets.QPushButton(PoseDialog)
         self.exifButton.setObjectName(_fromUtf8("exifButton"))
@@ -433,8 +434,8 @@ class Ui_Pose(object):
         self.exifButton.setText(_translate("PoseDialog", "Show EXIF", None))
         self.importParamButton.setText(_translate("PoseDialog", "Import camera position", None))
 
-        self.commandLinkButton.setText(_translate("PoseDialog", "Update Pose Estimation (Default)", None))
-        self.commandLinkButton2.setText(_translate("PoseDialog", "Update Pose Estimation (Smapshot)", None))
+        self.legacyPoseEstimationButton.setText(_translate("PoseDialog", "Update Pose Estimation (Legacy)", None))
+        self.poseEstimationButton.setText(_translate("PoseDialog", "Update Pose Estimation", None))
 
 
 if __name__ == "__main__":

@@ -31,7 +31,7 @@ class ReportDialog(QtWidgets.QDialog):
     #projections or back projections, you can do it here.
     #
     #When the Pose dialog window is closed, the errors 
-    def __init__(self, model, Qxx, paramBool, paramList, pathToData, xyzUnProjected, error_report):
+    def __init__(self, model, paramBool, paramList, pathToData, xyzUnProjected, error_report):
         QtWidgets.QDialog.__init__(self)
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setWindowModality(Qt.ApplicationModal)
@@ -87,9 +87,9 @@ class ReportDialog(QtWidgets.QDialog):
         """
         text += 'Pose estimation parameters:'
         paramText = ['X position','Y Position','Z Position','Tilt [°]','Heading [°]', 'Swing [°]', 'Focal [pixel]']
-        for name, bool, value, prec in zip(paramText, paramBool, paramList, Qxx):
+        for name, bool, value in zip(paramText, paramBool, paramList):
             if bool:
-                text += '\n'+ name + ', Free :' + ' ' + str(round(value,6)) + '\n(Precision : '+ str(round(prec,6))  + ")"
+                text += '\n'+ name + ', Free :' + ' ' + str(round(value,6)) + ")"
             else:
                 text += '\n'+ name + ', Fixed: ' + ' ' + str(round(value,6))
             

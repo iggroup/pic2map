@@ -29,7 +29,7 @@ from .ui_pose import Ui_Pose
 from copy import copy
 from PIL import Image
 import piexif
-from numpy import any, zeros, array, sin, cos, dot, linalg, pi, asarray, mean, shape, sqrt, flipud, std, concatenate, ones, arccos, arcsin, arctan,arctan2, size, abs, matrix, diag, nonzero
+from numpy import any, zeros, array, sin, cos, dot, linalg, pi, asarray, mean, std, min, max, sqrt, flipud, std, concatenate, ones, arccos, arcsin, arctan,arctan2, size, abs, matrix, diag
 from .reportDialog import ReportDialog
 from .exifInfo import ExifInfo
 from osgeo import ogr, osr
@@ -61,8 +61,8 @@ class Pose_dialog(QtWidgets.QDialog):
         self.iface = iface
         self.crs = crs
         self.result = paramPosIni
-        self.uiPose.commandLinkButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=False))
-        self.uiPose.commandLinkButton2.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
+        self.uiPose.legacyPoseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=False))
+        self.uiPose.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
         self.uiPose.reportButton.clicked.connect(self.showReportOnGCP)
         self.uiPose.importParamButton.clicked.connect(self.importPositionCamera)
         self.uiPose.cameraPositionButton.clicked.connect(self.savePositionCamera)
@@ -101,7 +101,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.move(qr.topLeft())
     
     def reportOnGCPs(self):
-        self.report = ReportDialog(self.gcp_table_model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
+        self.report = ReportDialog(self.gcp_table_model, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
@@ -369,8 +369,6 @@ class Pose_dialog(QtWidgets.QDialog):
             point_lnglat = QgsPointXY(lngComp, latComp)
             point_xy = reverse_transform.transform(point_lnglat)
 
-            print(f"RESULTS {point_xy.x()}, {point_xy.y()}, {altComp} --- {azimuthComp}, {tiltComp}, {rollComp}")
-
             # Convert the computed pose location from EPSG:4326 to the current Crs
             resultLS = [
                 point_xy.x(),
@@ -384,8 +382,8 @@ class Pose_dialog(QtWidgets.QDialog):
             lookAt = [0, 0, 0]
             upWorld = [0, 0, 0]
             predictions = [[gcp_comp["xReproj"], gcp_comp["yReproj"]] for gcp_comp in gcp_comp_list]
-            error_report = {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
-            errors = errors = [gcp_comp["dxy"] for gcp_comp in gcp_comp_list]
+            errors = [gcp_comp["dxy"] for gcp_comp in gcp_comp_list]
+            error_report = {"mean": mean(errors), "std": std(errors), "min": min(errors), "max": max(errors)}
 
         else:
 
@@ -543,14 +541,11 @@ class Pose_dialog(QtWidgets.QDialog):
         # Update projected and reprojected points for drawing
         self.update.emit()
 
-        #########################
-        # TEMPORARY DEACTIVATED #
-        #########################
         # Create the report on GCP
-        # self.reportOnGCPs()
-        # if self.report.inconsistent == False :
-        #     self.actionOnButton("E", True)
-        #     self.actionOnButton("C", "G")
+        self.reportOnGCPs()
+        if self.report.inconsistent == False :
+            self.actionOnButton("E", True)
+            self.actionOnButton("C", "G")
 
     def refreshButton(self):
         if self.buttonColor == "G":
