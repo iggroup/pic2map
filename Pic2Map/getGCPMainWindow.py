@@ -25,10 +25,10 @@ from builtins import str
 from builtins import range
 from builtins import object
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
 from .ui_disprast import Ui_disprast
@@ -41,7 +41,7 @@ from .GCPs import *
 from numpy import arctan, arctan2, arcsin, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
 from .D3View import D3_view
 # FIXME QtXml is no longer supported.
-from PyQt5 import QtXml
+from PyQt6 import QtXml
 import os, time
 from math import ceil
 

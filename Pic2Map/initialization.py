@@ -14,10 +14,10 @@ from builtins import str
 import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from .ui_disp_ini import Ui_Dialog
 import webbrowser
 import os, tempfile

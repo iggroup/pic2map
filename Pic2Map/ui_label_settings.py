@@ -2,11 +2,11 @@
 
 # Form implementation generated from reading ui file 'U:\pic2map-master\pic2map-master\Pic2Map\ui\ui_label_settings.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.2
+# Created by: PyQt6 UI code generator 5.12.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 try:
     _encoding = QtWidgets.QApplication.UnicodeUTF8

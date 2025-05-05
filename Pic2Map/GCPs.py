@@ -15,10 +15,10 @@ from builtins import object
 import platform
 import csv
 
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 PCI, PCJ, LOCX, LOCY, LOCZ, CHECK, ERROR, PIXERROR = list(range(8))
 MAGIC_NUMBER = 0x570C4
 FILE_VERSION = 1

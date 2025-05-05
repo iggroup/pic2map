@@ -43,11 +43,11 @@ from __future__ import division
 
 from builtins import zip
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-# from PyQt5.QtOpenGL import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+# from PyQt6.QtOpenGL import *
 # from OpenGL.GLU import *
 # from OpenGL.GL.framebufferobjects import *
 from numpy import sqrt, cos, sin, arccos, arctan2, zeros, array, float32, pi, linalg, cross, dot, tan

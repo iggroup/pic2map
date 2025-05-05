@@ -7,11 +7,11 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import *
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtCore import *
 
 
-from PyQt5.QtGui import *
+from PyQt6.QtGui import *
 try:
     _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):

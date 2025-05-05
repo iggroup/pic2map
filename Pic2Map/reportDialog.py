@@ -16,10 +16,10 @@
 from builtins import zip
 from builtins import str
 from builtins import range
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from .ui_reportGCP import Ui_ReportGCP
 from numpy import mean, min, max, std, zeros, sqrt, pi
 # create the dialog for zoom to point

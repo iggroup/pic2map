@@ -21,10 +21,10 @@ from __future__ import print_function
 from builtins import str
 from builtins import range
 from past.utils import old_div
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from .ui_pose import Ui_Pose
 from copy import copy
 from PIL import Image

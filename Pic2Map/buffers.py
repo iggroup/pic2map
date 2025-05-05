@@ -13,10 +13,10 @@ from __future__ import print_function
 from builtins import map
 from builtins import range
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from numpy import array, zeros, size, repeat, float32, uint32, max, min
 from osgeo import gdal
 from .ui_buffering import Ui_Form

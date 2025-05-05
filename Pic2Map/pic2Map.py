@@ -16,10 +16,10 @@ from past.utils import old_div
 import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from .buffers import Buffers
 from .getGCPMainWindow import GetGCPMainWindow
 from .initialization import Initialization_dialog
