@@ -20,3 +20,9 @@
 # nose testing output
 /.coverage
 /.noseids
+
+# vscode
+.vscode/settings.json
+
+# config file
+config.txt

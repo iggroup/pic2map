@@ -29,7 +29,7 @@ from .ui_pose import Ui_Pose
 from copy import copy
 from PIL import Image
 import piexif
-from numpy import any, zeros, array, sin, cos, dot, linalg, pi, asarray, mean, shape, sqrt, flipud, std, concatenate, ones, arccos, arcsin, arctan,arctan2, size, abs, matrix, diag, nonzero
+from numpy import any, zeros, array, sin, cos, dot, linalg, pi, asarray, mean, std, min, max, sqrt, flipud, std, concatenate, ones, arccos, arcsin, arctan,arctan2, size, abs, matrix, diag
 from .reportDialog import ReportDialog
 from .exifInfo import ExifInfo
 from osgeo import ogr, osr
@@ -37,12 +37,14 @@ from qgis.core import *
 from qgis.gui import *
 from qgis.utils import iface
 import os
+from .GCPs import GCPTableModel
+from .smapshotgeoreferencer import georeferencerUtils as georef_utils
 
 class Pose_dialog(QtWidgets.QDialog):
     update = pyqtSignal()
     needRefresh = pyqtSignal()
     importUpdate = pyqtSignal()
-    def __init__(self, model, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
+    def __init__(self, gcp_table_model: GCPTableModel, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
         #QtGui.QDialog.__init__(self)
         QtWidgets.QDialog.__init__(self)
         self.uiPose = Ui_Pose()
@@ -50,7 +52,7 @@ class Pose_dialog(QtWidgets.QDialog):
         #self.center()
         self.done = False
         self.sizePicture = sizePicture
-        self.model = model
+        self.gcp_table_model = gcp_table_model
         self.whoIsChecked = whoIsChecked
         self.pathToData = pathToData
         self.xyzUnProjected = None
@@ -59,7 +61,8 @@ class Pose_dialog(QtWidgets.QDialog):
         self.iface = iface
         self.crs = crs
         self.result = paramPosIni
-        self.uiPose.commandLinkButton.clicked.connect(self.estimatePose)
+        self.uiPose.legacyPoseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=False))
+        self.uiPose.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
         self.uiPose.reportButton.clicked.connect(self.showReportOnGCP)
         self.uiPose.importParamButton.clicked.connect(self.importPositionCamera)
         self.uiPose.cameraPositionButton.clicked.connect(self.savePositionCamera)
@@ -98,7 +101,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.move(qr.topLeft())
     
     def reportOnGCPs(self):
-        self.report = ReportDialog(self.model, self.Qxx, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
+        self.report = ReportDialog(self.gcp_table_model, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
@@ -195,11 +198,10 @@ class Pose_dialog(QtWidgets.QDialog):
         self.uiPose.focalLine.setText(str(focalPixel))
         self.uiPose.focalIni.setChecked(True)
         #self.uiPose.focalIni.toggle()
+
+    def estimatePose(self, smapshot_georeferencer=False):
         
-    
-    def estimatePose(self):
-        
-        #Function called when the user press "Estimate Pose"
+        # Function called when the user press "Estimate Pose"
         """
         Read the model (table) and get all the values from the 5th first columns
     
@@ -210,40 +212,40 @@ class Pose_dialog(QtWidgets.QDialog):
         Column 1 and 2 are seen has observationservations.
         Columns 3,4,5 form the ordinate on which the observationservation in done.
         """
-        model = self.model
-        rowCount = model.rowCount()
-        rowCountEnable = 0
-        for row in range(0,rowCount):
-            if model.data(model.index(row,5)) == 1:
-                rowCountEnable +=1
+        gcp_table_model: GCPTableModel = self.gcp_table_model
+        total_gcps: int = gcp_table_model.rowCount()
+        total_enabled_gcps = 0
+        for row_idx in range(0, total_gcps):
+            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 1:
+                total_enabled_gcps += 1
 
-        xyz = zeros((rowCountEnable, 3))
-        uv1 = zeros((rowCountEnable,2))
-        indice = 0
-        for row in range(0,rowCount):
-                if model.checkValid(row)==0:
-                    continue
-                if model.data(model.index(row,5)) == 0:
-                    continue
-                index = model.index(row, 0)
-                uv1[indice,0] = model.data(index)
-                index = model.index(row,1)
-                uv1[indice,1] = model.data(index)
-                index = model.index(row,2)
-                xyz[indice,0] = -model.data(index)
-                index = model.index(row,3)
-                xyz[indice,1] = model.data(index)
-                index = model.index(row,4)
-                xyz[indice,2] = model.data(index)
-                indice +=1
-                
-        # self.xyzUsed are GCP which have 6th column enabled 
-        self.xyzUsed = array([-1*xyz[:,0],xyz[:,1],xyz[:,2]]).T
+        gcp_xyz_array = zeros((total_enabled_gcps, 3))
+        gcp_uv_array = zeros((total_enabled_gcps,2))
+        gcp_idx = 0
+        for row_idx in range(0, total_gcps):
+            if gcp_table_model.checkValid(row_idx)==0:
+                continue
+            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 0:
+                continue
+            index = gcp_table_model.index(row_idx, 0)
+            gcp_uv_array[gcp_idx,0] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,1)
+            gcp_uv_array[gcp_idx,1] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,2)
+            gcp_xyz_array[gcp_idx,0] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,3)
+            gcp_xyz_array[gcp_idx,1] = gcp_table_model.data(index)
+            index = gcp_table_model.index(row_idx,4)
+            gcp_xyz_array[gcp_idx,2] = gcp_table_model.data(index)
+            gcp_idx +=1
+
+        # self.gcp_xyz_used are GCP which have 6th column enabled 
+        self.gcp_xyz_used = array([-1*gcp_xyz_array[:,0],gcp_xyz_array[:,1],gcp_xyz_array[:,2]]).T
         
         table = self.findChildren(QtWidgets.QLineEdit)
         parameter_bool = zeros((9))
         parameter_list = []
-        indice = 0
+        parameter_idx = 0
         """
         Read the list of Parameter of camera
         0. X Position 
@@ -259,92 +261,49 @@ class Pose_dialog(QtWidgets.QDialog):
         
         #For each radio button (Free, Fixed, Apriori) for each parameters
         for radioButton in self.findChildren(QtWidgets.QRadioButton):
-            
-            
+
             if (radioButton.text() == "Free"):
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(1) # The parameters is free
+                    parameter_bool[parameter_idx] = int(1) # The parameters is free
                     parameter_list.append(0)
                      
             elif (radioButton.text() == "Fixed"):
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(0) #The parameters is fixed
+                    parameter_bool[parameter_idx] = int(0) #The parameters is fixed
 
-                    value = float(table[indice].text())
-                    if indice == 0:
+                    value = float(table[parameter_idx].text())
+                    if parameter_idx == 0:
                         value = -value
-                    if indice > 2 and indice < 6:
+                    if parameter_idx > 2 and parameter_idx < 6:
                         value *=  old_div(pi,180)  #angle are displayed in degree
-                    if indice == 7:
+                    if parameter_idx == 7:
                         value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if indice == 8:
+                    if parameter_idx == 8:
                         value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
                     parameter_list.append(value)
                     
             elif (radioButton.text() == "Apriori"): #Apriori
-            
-
                 
                 if radioButton.isChecked():
 
-                    parameter_bool[indice] = int(2) #The parameters is aprior
-                    
-                    value = float(table[indice].text())
-                    if indice == 0:
+                    parameter_bool[parameter_idx] = int(2) #The parameters is aprior
+
+                    value = float(table[parameter_idx].text())
+                    if parameter_idx == 0:
                         value = -value
-                    if indice > 2 and indice < 6:
+                    if parameter_idx > 2 and parameter_idx < 6:
                         value *=  old_div(pi,180)  #angle are displayed in degree
-                    if indice == 7:
+                    if parameter_idx == 7:
                         value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if indice == 8:
+                    if parameter_idx == 8:
                         value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
                     parameter_list.append(value)
                 
                 #Incrementation of the indice of the parameters (each 3 button)
-                indice += 1
-            
-        if list(parameter_bool[:7]) == [0]*7 : 
-    
-            tilt = parameter_list[3]
-            heading = parameter_list[4]
-            swing = parameter_list[5]
+                parameter_idx += 1
 
-            R = zeros((3,3))
-            R[0,0] = -cos(heading)*cos(swing)-sin(heading)*cos(tilt)*sin(swing)
-            R[0,1] =  sin(heading)*cos(swing)-cos(heading)*cos(tilt)*sin(swing) 
-            R[0,2] = -sin(tilt)*sin(swing)
-            R[1,0] =  cos(heading)*sin(swing)-sin(heading)*cos(tilt)*cos(swing)
-            R[1,1] = -sin(heading)*sin(swing)-cos(heading)*cos(tilt)*cos(swing) 
-            R[1,2] = -sin(tilt)*cos(swing)
-            R[2,0] = -sin(heading)*sin(tilt)
-            R[2,1] = -cos(heading)*sin(tilt)
-            R[2,2] =  cos(tilt)
-
-            dirCam = array([0,0,-parameter_list[6]])
-            upCam = array([0,-1,0])
-            
-            dirWorld = dot(linalg.inv(R),dirCam.T)
-            lookat_temp = array(dirWorld)+array([parameter_list[0], parameter_list[1] , parameter_list[2]])
-            upWorld_temp = dot(linalg.inv(R),upCam.T) 
-
-            tilt = (parameter_list[3]*180)/pi
-            heading = (parameter_list[4]*180)/pi 
-            swing = (parameter_list[5]*180)/pi 
-            
-            self.pos = [parameter_list[0], parameter_list[2], parameter_list[1]]
-            self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/parameter_list[6]))*180,pi)
-            self.roll = arcsin(-sin(tilt)*sin(swing))
-            self.lookat = array([lookat_temp[0], lookat_temp[2], lookat_temp[1]])
-            self.upWorld = array([upWorld_temp[0], upWorld_temp[2], upWorld_temp[1]])
-            self.result = [parameter_list[0], parameter_list[1], parameter_list[2], tilt, heading, swing, parameter_list[6]]
-            self.whoIsChecked = [False, True, False]*7 
-            self.importUpdate.emit()
-            return
-
-            
-                
         # We fix anyway the central point. Future work can take it into account. It is therefore used here as parameter.
         #U0
         parameter_bool[7] = 0
@@ -353,129 +312,240 @@ class Pose_dialog(QtWidgets.QDialog):
         parameter_bool[8] = 0
         parameter_list.append(old_div(self.sizePicture[1],2))
 
-        try:
-            #Check if consistency of inputs
-            if uv1.shape[0] != xyz.shape[0]:
-                raise ValueError
-                
-            #Check if there is at least 4 GCP
-            elif (uv1.shape[0] < 4):
-                raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (uv1.shape[0]))
-                
-            #Check if there is at least 4 GCP
-            elif (uv1.shape[0] < 6) and any(parameter_bool[0:7]==1):
-                raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (uv1.shape[0]))
-                
+        if smapshot_georeferencer:
+            # Convert gcp location from the current Crs to EPSG:4326
+            source_crs = QgsProject.instance().crs()
+            target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+            transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
+            reverse_transform = QgsCoordinateTransform(target_crs, source_crs, QgsProject.instance())
+            gcp_smapshot_list = []
+            for gcp_idx in range(total_enabled_gcps):
+                x, y, z = gcp_xyz_array[gcp_idx]
+                point_xy = QgsPointXY(x, y)
+                point_lnglat = transform.transform(point_xy)
+                gcp_smapshot_list.append({
+                    "longitude": point_lnglat.x(),
+                    "latitude": point_lnglat.y(),
+                    "altitude": z,
+                    "x": gcp_uv_array[gcp_idx, 0],
+                    "y": gcp_uv_array[gcp_idx, 1]
+                })
 
-            #Check if there is at least 6 GCP
-            #if (uv1.shape[0] < 6) and any(parameter_bool[0:7]==1):
-            #    raise nCorrError2
-                
-        except IOError as x:
+            # Initial data (free)
+            lng0 = 0
+            lat0 = 0
+            alt0 = 0
+            azimuthDeg = 0
+            tiltDeg = 0
+            rollDeg = 0
+            focal = georef_utils.computeDiagonal(self.sizePicture[0], self.sizePicture[1])
 
-            QMessageBox.warning(self, "GCP error", str(x))
-            self.done = False
-            
-        except ValueError:
-            QMessageBox.warning(self, "GCP - Error",
-                    'xyz (%d points) and uv (%d points) have different number of points.' %(xyz.shape[0], uv.shape[0]))
-            self.done = False
-            
+            (
+                lngComp,
+                latComp,
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focalComp,
+                pComp,
+                gcp_comp_list,
+                imageCoordinates,
+                method,
+            ) = georef_utils.georeferencer(
+                lng0,
+                lat0,
+                alt0,
+                azimuthDeg,
+                tiltDeg,
+                rollDeg,
+                focal,
+                self.sizePicture[0],
+                self.sizePicture[1],
+                gcp_smapshot_list,
+                plotBool=False,
+            )
+
+            point_lnglat = QgsPointXY(lngComp, latComp)
+            point_xy = reverse_transform.transform(point_lnglat)
+
+            # Convert the computed pose location from EPSG:4326 to the current Crs
+            resultLS = [
+                point_xy.x(),
+                point_xy.y(),
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focal
+            ]
+            lookAt = [0, 0, 0]
+            upWorld = [0, 0, 0]
+            predictions = [[gcp_comp["xReproj"], gcp_comp["yReproj"]] for gcp_comp in gcp_comp_list]
+            errors = [gcp_comp["dxy"] for gcp_comp in gcp_comp_list]
+            error_report = {"mean": mean(errors), "std": std(errors), "min": min(errors), "max": max(errors)}
+
         else:
-          
-            
-            if (xyz.shape[0] >= 6):
+
+            if list(parameter_bool[:7]) == [0]*7 : 
+
+                tilt = parameter_list[3]
+                heading = parameter_list[4]
+                swing = parameter_list[5]
+
+                R = zeros((3,3))
+                R[0,0] = -cos(heading)*cos(swing)-sin(heading)*cos(tilt)*sin(swing)
+                R[0,1] =  sin(heading)*cos(swing)-cos(heading)*cos(tilt)*sin(swing) 
+                R[0,2] = -sin(tilt)*sin(swing)
+                R[1,0] =  cos(heading)*sin(swing)-sin(heading)*cos(tilt)*cos(swing)
+                R[1,1] = -sin(heading)*sin(swing)-cos(heading)*cos(tilt)*cos(swing) 
+                R[1,2] = -sin(tilt)*cos(swing)
+                R[2,0] = -sin(heading)*sin(tilt)
+                R[2,1] = -cos(heading)*sin(tilt)
+                R[2,2] =  cos(tilt)
+
+                dirCam = array([0,0,-parameter_list[6]])
+                upCam = array([0,-1,0])
                 
-                if any(parameter_bool[0:7]==1):
-                    #There are free values a DLT is performed
-                    print ('Position is fixed but orientation is unknown')
-                    print ('The orientation is initialized with DLT')
+                dirWorld = dot(linalg.inv(R),dirCam.T)
+                lookat_temp = array(dirWorld)+array([parameter_list[0], parameter_list[1] , parameter_list[2]])
+                upWorld_temp = dot(linalg.inv(R),upCam.T) 
+
+                tilt = (parameter_list[3]*180)/pi
+                heading = (parameter_list[4]*180)/pi 
+                swing = (parameter_list[5]*180)/pi 
+                
+                self.pos = [parameter_list[0], parameter_list[2], parameter_list[1]]
+                self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/parameter_list[6]))*180,pi)
+                self.roll = arcsin(-sin(tilt)*sin(swing))
+                self.lookat = array([lookat_temp[0], lookat_temp[2], lookat_temp[1]])
+                self.upWorld = array([upWorld_temp[0], upWorld_temp[2], upWorld_temp[1]])
+                self.result = [parameter_list[0], parameter_list[1], parameter_list[2], tilt, heading, swing, parameter_list[6]]
+                self.whoIsChecked = [False, True, False]*7 
+                self.importUpdate.emit()
+                return
+
+            try:
+                #Check if consistency of inputs
+                if gcp_uv_array.shape[0] != gcp_xyz_array.shape[0]:
+                    raise ValueError
                     
-                    resultInitialization, L, v, up = self.DLTMain(xyz,uv1)
-                else:
-                    #There is only fixed or apriori values LS is performed
-                    print ('There is only fixed or apriori values LS is performed')
-                    resultInitialization = parameter_list
+                #Check if there is at least 4 GCP
+                elif (gcp_uv_array.shape[0] < 4):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide 4 GCP and apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv_array.shape[0]))
                     
+                #Check if there is at least 4 GCP
+                elif (gcp_uv_array.shape[0] < 6) and any(parameter_bool[0:7]==1):
+                    raise IOError("There are only %d GCP and no apriori values. A solution can not be computed. You can either provide apriori values (solved with least-square) or 6 GCP (solved with DLT)" % (gcp_uv_array.shape[0]))
+                    
+
+                #Check if there is at least 6 GCP
+                #if (uv1.shape[0] < 6) and any(parameter_bool[0:7]==1):
+                #    raise nCorrError2
+
+            except IOError as x:
+
+                QMessageBox.warning(self, "GCP error", str(x))
+                self.done = False
+
+            except ValueError:
+                QMessageBox.warning(self, "GCP - Error",
+                        'xyz (%d points) and uv (%d points) have different number of points.' %(gcp_xyz_array.shape[0], gcp_uv_array.shape[0]))
+                self.done = False
 
             else:
-                print ('There are less than 6 GCP: every parameter must be fixed or apriori, LS is performed')
-                resultInitialization = parameter_list
+                
+                if (gcp_xyz_array.shape[0] >= 6):
+                    
+                    if any(parameter_bool[0:7]==1):
+                        #There are free values a DLT is performed
+                        print ('Position is fixed but orientation is unknown')
+                        print ('The orientation is initialized with DLT')
+                        
+                        resultInitialization, L, v, upWorld = self.DLTMain(gcp_xyz_array,gcp_uv_array)
+                    else:
+                        #There is only fixed or apriori values LS is performed
+                        print ('There is only fixed or apriori values LS is performed')
+                        resultInitialization = parameter_list
 
-            
-            """
-            The least square works well only if the initial guess is not too far from the optimal solution
-            The DLT algorithm provides good estimates of parameters.
-            However, it is not possible to fix some parameter with the DLT.
-            For this last task, a least square has been constructed with variable number of parameter.
-            
-            After the initial DLT, we get an estimate for all parameters. 
-            We take the fixed parameters from the dialog box and give the initial
-            guess from the DLT to free parameters. 
-            """
-            resultLS, Lproj, vect, up, predictions, error_report, errors = self.LS(xyz,uv1,parameter_bool,parameter_list,resultInitialization)
-
-            self.predictions = predictions
-            self.error_report = error_report
-            self.errors = errors
-
-            k = 0
-
-            result = [0]*9
-            # Length of resultLS is [9 - length of parameter_list]
-            # We reconstruct the "result" vector which contains the output parameters
-            for i in range(9):
-                if (parameter_bool[i]==1) or (parameter_bool[i]==2):
-                    result[i] = resultLS[k]
-                    k +=1
                 else:
-                    result[i]=parameter_list[i]
+                    print ('There are less than 6 GCP: every parameter must be fixed or apriori, LS is performed')
+                    resultInitialization = parameter_list
 
-            indice = 0
-            self.poseLineEdit = []
-            # Set result in the dialog box
-            for line in self.findChildren(QtWidgets.QLineEdit):
-                value = result[indice]
-                if indice == 0:
-                    value *= -1
-                if indice > 2 and indice < 6:
-                    value *= old_div(180,pi)
-                if indice == 7:
-                    value-=self.sizePicture[0]/2.0
-                if indice == 8:
-                    value-=self.sizePicture[1]/2.0
-                text = str(round(value,3))
-                line.setText(text)
-                self.poseLineEdit.append(text)
-                indice +=1
-            
-            #Set the variable for next computation and for openGL pose
-            self.parameter_bool = parameter_bool
-            self.parameter_list = parameter_list
-            self.done = True
-            self.result = result
-            self.LProj = Lproj
-            self.lookat = vect
-            self.upWorld = up
-            self.pos = result[0:3]
-            # The focal, here calculate in pixel, has to be translated in term of vertical field of view for openGL
-            if result[6] != 0 :
-                self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/result[6]))*180,pi)
-            else :
-                self.FOV = 0 
-            self.roll = arcsin(-sin(result[3])*sin(result[5]))
-            
-            indice = 0
-            for radio in self.findChildren(QtWidgets.QRadioButton):
-                self.whoIsChecked[indice] = radio.isChecked()
-                indice +=1
-            # Update projected and reprojected points for drawing
-            self.update.emit()
-            # Create the report on GCP
-            self.reportOnGCPs()
-            if self.report.inconsistent == False :
-                self.actionOnButton("E", True)
-                self.actionOnButton("C", "G")
+                """
+                The least square works well only if the initial guess is not too far from the optimal solution
+                The DLT algorithm provides good estimates of parameters.
+                However, it is not possible to fix some parameter with the DLT.
+                For this last task, a least square has been constructed with variable number of parameter.
+                
+                After the initial DLT, we get an estimate for all parameters. 
+                We take the fixed parameters from the dialog box and give the initial
+                guess from the DLT to free parameters. 
+                """
+                resultLS, Lproj, lookAt, upWorld, predictions, error_report, errors = self.LS(gcp_xyz_array,gcp_uv_array,parameter_bool,parameter_list,resultInitialization)
+
+        # Compute the result vector
+        result = [0]*9
+        # Length of resultLS is [9 - length of parameter_list]
+        # We reconstruct the "result" vector which contains the output parameters
+        k = 0
+        for i in range(9):
+            if (parameter_bool[i]==1) or (parameter_bool[i]==2):
+                result[i] = resultLS[k]
+                k +=1
+            else:
+                result[i]=parameter_list[i]
+        result[0] *= -1
+
+        # Set result in the dialog box
+        gcp_idx = 0
+        self.poseLineEdit = []
+        for line in self.findChildren(QtWidgets.QLineEdit):
+            value = result[gcp_idx]
+            if gcp_idx == 0:
+                value *= -1
+            if not smapshot_georeferencer and gcp_idx > 2 and gcp_idx < 6:
+                value *= old_div(180,pi)
+            if gcp_idx == 7:
+                value-=self.sizePicture[0]/2.0
+            if gcp_idx == 8:
+                value-=self.sizePicture[1]/2.0
+            text = str(round(value,3))
+            line.setText(text)
+            self.poseLineEdit.append(text)
+            gcp_idx +=1
+        
+        # Set the variable for next computation and for openGL pose
+        self.parameter_bool = parameter_bool
+        self.parameter_list = parameter_list
+        self.done = True
+        self.result = result
+        # self.LProj = Lproj OPENGL SPECIFIC - NOT NEEDED
+        self.lookat = lookAt
+        self.upWorld = upWorld
+        self.predictions = predictions
+        self.error_report = error_report
+        self.errors = errors
+        self.pos = result[0:3]
+        # The focal, here calculate in pixel, has to be translated in term of vertical field of view for openGL
+        if result[6] != 0 :
+            self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/result[6]))*180,pi)
+        else :
+            self.FOV = 0 
+        self.roll = arcsin(-sin(result[3])*sin(result[5]))
+        
+        gcp_idx = 0
+        for radio in self.findChildren(QtWidgets.QRadioButton):
+            self.whoIsChecked[gcp_idx] = radio.isChecked()
+            gcp_idx +=1
+        # Update projected and reprojected points for drawing
+        self.update.emit()
+
+        # Create the report on GCP
+        self.reportOnGCPs()
+        if self.report.inconsistent == False :
+            self.actionOnButton("E", True)
+            self.actionOnButton("C", "G")
 
     def refreshButton(self):
         if self.buttonColor == "G":

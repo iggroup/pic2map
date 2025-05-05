@@ -19,7 +19,7 @@ class Ui_Pose(object):
     def setupUi(self, PoseDialog):
         self.needRefresh = PoseDialog.needRefresh
         PoseDialog.setObjectName(_fromUtf8("PoseDialog"))
-        PoseDialog.resize(648, 383)
+        PoseDialog.adjustSize()
         self.gridLayout = QtWidgets.QGridLayout(PoseDialog)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
         self.buttonBox = QtWidgets.QDialogButtonBox(PoseDialog)
@@ -142,6 +142,9 @@ class Ui_Pose(object):
         self.gridLayout_2.addWidget(self.focalFixed, 6, 2, 1, 1)
         self.gridLayout_2.addWidget(self.focalIni, 6, 3, 1, 1)
 
+        # NEW GEOREFERENCER: Temporary hide the radiobuttons
+        self.hide_layout(self.gridLayout_2)
+
         self.XPosLine = QtWidgets.QLineEdit(self.frame_2)
         self.XPosLine.setObjectName(_fromUtf8("XPosLine"))
         self.gridLayout_2.addWidget(self.XPosLine, 0, 4, 1, 1)
@@ -194,9 +197,17 @@ class Ui_Pose(object):
    
         self.gridLayout.addWidget(self.frame_2, 1, 1, 1, 4)
 
-        self.commandLinkButton = QtWidgets.QCommandLinkButton(PoseDialog)
-        self.commandLinkButton.setObjectName(_fromUtf8("commandLinkButton"))
-        self.gridLayout.addWidget(self.commandLinkButton, 2, 3, 1, 2)
+        self.commandLinkVBoxLayout = QtWidgets.QVBoxLayout()
+        self.gridLayout.addLayout(self.commandLinkVBoxLayout, 2, 3, 1, 2)
+
+        self.legacyPoseEstimationButton = QtWidgets.QCommandLinkButton(PoseDialog)
+        self.legacyPoseEstimationButton.setObjectName(_fromUtf8("commandLinkButton"))
+        # Hide the default pose estimation before proper removal
+        # self.commandLinkVBoxLayout.addWidget(self.poseEstimationDefaultButton)
+
+        self.poseEstimationButton = QtWidgets.QCommandLinkButton(PoseDialog)
+        self.poseEstimationButton.setObjectName(_fromUtf8("commandLinkButton2"))
+        self.commandLinkVBoxLayout.addWidget(self.poseEstimationButton)
 
         self.exifButton = QtWidgets.QPushButton(PoseDialog)
         self.exifButton.setObjectName(_fromUtf8("exifButton"))
@@ -270,6 +281,12 @@ class Ui_Pose(object):
         self.focalFree.toggled.connect(self.focalFreeclicked)
         self.focalIni.toggled.connect(self.focalIniclicked)
         self.focalLine.textEdited.connect(self.lineEditEdited)
+
+    def hide_layout(self, layout):
+        for i in range(layout.count()):
+            widget = layout.itemAt(i).widget()
+            if widget:
+                widget.hide()  # Hide each widget in the layout
 
     def lineEditEdited(self):
         self.needRefresh.emit() 
@@ -417,7 +434,8 @@ class Ui_Pose(object):
         self.exifButton.setText(_translate("PoseDialog", "Show EXIF", None))
         self.importParamButton.setText(_translate("PoseDialog", "Import camera position", None))
 
-        self.commandLinkButton.setText(_translate("PoseDialog", "Update Pose Estimation", None))
+        self.legacyPoseEstimationButton.setText(_translate("PoseDialog", "Update Pose Estimation (Legacy)", None))
+        self.poseEstimationButton.setText(_translate("PoseDialog", "Update Pose Estimation", None))
 
 
 if __name__ == "__main__":
