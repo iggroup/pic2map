@@ -89,7 +89,7 @@ class ReportDialog(QtWidgets.QDialog):
         paramText = ['X position','Y Position','Z Position','Tilt [°]','Heading [°]', 'Swing [°]', 'Focal [pixel]']
         for name, bool, value in zip(paramText, paramBool, paramList):
             if bool:
-                text += '\n'+ name + ', Free :' + ' ' + str(round(value,6)) + ")"
+                text += '\n'+ name + ', Free :' + ' ' + str(round(value,6))
             else:
                 text += '\n'+ name + ', Fixed: ' + ' ' + str(round(value,6))
             
