@@ -30,7 +30,7 @@ class Ui_Exif2(object):
         self.lineDiagSensor.setObjectName("lineDiagSensor")
         self.gridLayout.addWidget(self.lineDiagSensor, 2, 0, 1, 1)
         self.textBrowserFocal = QtWidgets.QTextBrowser(self.groupBox)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textBrowserFocal.sizePolicy().hasHeightForWidth())

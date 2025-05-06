@@ -86,7 +86,7 @@ class Ui_drapping(object):
         self.saveButton = QtWidgets.QPushButton(self.dockWidgetContents)
         self.saveButton.setObjectName("saveButton")
         self.verticalLayout.addWidget(self.saveButton)
-        spacerItem = QtWidgets.QSpacerItem(20, 260, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(20, 260, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         self.dockWidget.setWidget(self.dockWidgetContents)
         Ui_drapping.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget)

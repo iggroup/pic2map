@@ -128,7 +128,7 @@ class Ui_Monoplotter(object):
         self.verticalLayout.insertSpacing(-1, 30)
         self.verticalLayout.addWidget(self.retour)
         
-        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.verticalLayout.addItem(spacerItem)
         
         self.groupBoxColor = QtWidgets.QGroupBox(self.dockWidgetContents)

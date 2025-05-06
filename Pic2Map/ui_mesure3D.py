@@ -20,7 +20,7 @@ class Ui_Mesure3DDialog(object):
         Mesure3DDialog.setSizePolicy(sizePolicy)
         self.textBrowser_2 = QtWidgets.QTextBrowser(Mesure3DDialog)
         self.textBrowser_2.setGeometry(QtCore.QRect(110, 180, 311, 21))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.textBrowser_2.sizePolicy().hasHeightForWidth())

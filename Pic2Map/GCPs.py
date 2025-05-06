@@ -55,9 +55,9 @@ class GCPTableModel(QAbstractTableModel):
         
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
+            return Qt.ItemFlag.ItemIsEnabled
         return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable)
+                            Qt.ItemFlag.ItemIsEditable)
 
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
@@ -83,18 +83,18 @@ class GCPTableModel(QAbstractTableModel):
                 return  round(GCP.error,1)
             elif column == PIXERROR:
                 return  round(GCP.pixerror,1)
-        elif role == Qt.TextAlignmentRole:
-            return  int(Qt.AlignLeft|Qt.AlignVCenter)
-        elif role == Qt.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.TextAlignmentRole:
+            return  int(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        elif role == Qt.ItemDataRole.BackgroundRole:
                 return  QColor(210, 230, 230)
         return
 
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.TextAlignmentRole:
+        if role == Qt.ItemDataRole.TextAlignmentRole:
             if orientation == Qt.Orientation.Horizontal:
-                return  int(Qt.AlignLeft|Qt.AlignVCenter)
-            return  int(Qt.AlignRight|Qt.AlignVCenter)
+                return  int(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+            return  int(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter)
         if role != Qt.ItemDataRole.DisplayRole:
             return  
         if orientation == Qt.Orientation.Horizontal:
