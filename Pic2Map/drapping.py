@@ -64,7 +64,7 @@ class drappingMain(QtWidgets.QMainWindow):
         
         self.viewOrtho.makeCurrent()
         self.setCentralWidget(self.viewOrtho)
-        self.resolution = QDesktopWidget().screenGeometry()
+        self.resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = old_div(self.resolution.height(),2)
         l_nord =  pointBuffer.l_nord

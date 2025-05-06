@@ -347,7 +347,7 @@ class Pic2Map(object):
         #####
         im = Image.open(picName)
         width, height = im.size
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = old_div(resolution.height(),2)
         size[0] = int(float(float(width)/float(height))*size[1])

@@ -82,7 +82,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         self.qgl_window = QGLMonoplotter(pointBuffer, picture_name, ParamPose)
         
         img = QImage(picture_name)
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = resolution.height()/1.5#2
         self.ratio = img.width()/float( img.height())

@@ -415,7 +415,7 @@ class GetGCPMainWindow(QMainWindow):
                    return
 
             matrix = QTransform()
-            zoomFactorOnCross = old_div(QDesktopWidget().screenGeometry().height(),(10.0*(self.sizePicture[0]/80.0)))
+            zoomFactorOnCross = old_div(QGuiApplication.primaryScreen().geometry().height(),(10.0*(self.sizePicture[0]/80.0)))
             matrix.scale(zoomFactorOnCross, zoomFactorOnCross)
             self.ui.graphicsView.setTransform(matrix)
             hOffset = old_div(self.ui.graphicsView.size().width(),(2.0*zoomFactorOnCross))
@@ -441,7 +441,7 @@ class GetGCPMainWindow(QMainWindow):
         self.view3D.fixPositionSignal.connect(self.fixPosition)  
 
         #get same size as the scene
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = old_div(resolution.height(),2)
         size[0] = int(self.sizePicture[0]/float(self.sizePicture[1])*size[1])
@@ -745,7 +745,7 @@ class GetGCPMainWindow(QMainWindow):
         img = Image.open(name)
         self.picture = QPixmap(name)
         size_pic = self.picture.size()
-        self.picture = self.picture.scaled(size_pic, Qt.IgnoreAspectRatio,Qt.SmoothTransformation)
+        self.picture = self.picture.scaled(size_pic, Qt.AspectRatioMode.IgnoreAspectRatio,Qt.TransformationMode.SmoothTransformation)
         self.scene.addPixmap(self.picture)
         self.scene.update()
         self.ui.graphicsView.show()
@@ -808,18 +808,18 @@ class GetGCPMainWindow(QMainWindow):
         cancel = False
         if self.model.rowCount() > 0  and fLoadName :                                           
             QuestionBox = QMessageBox(self)
-            QuestionBox.setIcon(QMessageBox.Warning)
+            QuestionBox.setIcon(QMessageBox.Icon.Warning)
             QuestionBox.setWindowTitle("GCPs already present")
             QuestionBox.setText("How do you want to handle the current GCPs?")
-            QuestionBox.setStandardButtons(QMessageBox.Discard | QMessageBox.Save | QMessageBox.Cancel)
-            ButtonDiscard = QuestionBox.button(QMessageBox.Discard)
+            QuestionBox.setStandardButtons(QMessageBox.StandardButton.Discard | QMessageBox.StandardButton.Save | QMessageBox.StandardButton.Cancel)
+            ButtonDiscard = QuestionBox.button(QMessageBox.StandardButton.Discard)
             ButtonDiscard.setText("Replace")
-            ButtonSave = QuestionBox.button(QMessageBox.Save)
+            ButtonSave = QuestionBox.button(QMessageBox.StandardButton.Save)
             ButtonSave.setText("Keep")
             ret = QuestionBox.exec_()
-            if ret == QMessageBox.Discard :
+            if ret == QMessageBox.StandardButton.Discard :
                 discard = True
-            elif ret == QMessageBox.Cancel :
+            elif ret == QMessageBox.StandardButton.Cancel :
                 cancel = True
 
         if fLoadName and cancel == False :
@@ -886,13 +886,13 @@ class GetGCPMainWindow(QMainWindow):
         self.ui.graphicsView.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.ui.graphicsView.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
 
-        if ev.button() == Qt.MidButton :
+        if ev.button() == Qt.MouseButton.MiddleButton :
             self.ui.tableView.clearSelection()
             width = (ev.scenePos().x()*self.ui.graphicsView.size().width())/self.sizePicture[0]
             height = (ev.scenePos().y()*self.ui.graphicsView.size().height())/self.sizePicture[1]
-            self.ui.graphicsView.setDragMode(QGraphicsView.ScrollHandDrag)
+            self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
             pos = QPointF(width, height)
-            fake = QMouseEvent(QEvent.MouseButtonPress, pos, Qt.LeftButton, Qt.LeftButton,  ev.modifiers())
+            fake = QMouseEvent(QEvent.Type.MouseButtonPress, pos, Qt.MouseButton.LeftButton, Qt.MouseButton.LeftButton,  ev.modifiers())
             self.ui.graphicsView.mousePressEvent(fake)
          
         elif self.ZoomInButton.isChecked():
@@ -906,7 +906,7 @@ class GetGCPMainWindow(QMainWindow):
         else :
             self.ui.statusbar.showMessage('Get 3D coordinate by clicking in the QGIS canvas or in the 3D view')
             if self.ui.tableView.selectedIndexes() != []:
-                if ev.button() == Qt.LeftButton:
+                if ev.button() == Qt.MouseButton.LeftButton:
                     a = ev.scenePos()
                     newDataIndex = self.updatePictureGCP(a)
                     self.refreshPictureGCP()
@@ -925,21 +925,21 @@ class GetGCPMainWindow(QMainWindow):
                 index = self.model.index(row,1)
                 posy = self.model.data(index)
                 if row == self.ui.tableView.currentIndex().row():
-                    pen = QPen(QColor(255, 0, 0) , self.iconSet.WM, Qt.SolidLine)
+                    pen = QPen(QColor(255, 0, 0) , self.iconSet.WM, Qt.PenStyle.SolidLine)
                 else:
-                    pen = QPen(self.iconSet.colorM, self.iconSet.WM, Qt.SolidLine)
+                    pen = QPen(self.iconSet.colorM, self.iconSet.WM, Qt.PenStyle.SolidLine)
                 self.itemCross(posx,posy, pen, row)
             
             #redraw reprojectedCrossection after pose estimation
-            resolution = QDesktopWidget().screenGeometry()
+            resolution = QGuiApplication.primaryScreen().geometry()
             size = [0,0]
             size[1] = old_div(resolution.height(),2)
             size[0] = int(self.sizePicture[0]/float(self.sizePicture[1])*size[1])
             for u,v in self.uvTableAll:
-                pen = QPen(QColor(240, 160, 240) , self.iconSet.WM, Qt.SolidLine)
+                pen = QPen(QColor(240, 160, 240) , self.iconSet.WM, Qt.PenStyle.SolidLine)
                 self.itemCross(u,v, pen)
             for u,v in self.uvTableActivated:
-                pen = QPen(self.iconSet.colorC , self.iconSet.WM, Qt.SolidLine)
+                pen = QPen(self.iconSet.colorC , self.iconSet.WM, Qt.PenStyle.SolidLine)
                 self.itemCross(u,v, pen)
         
     def refreshCanvasGCP(self):
@@ -1062,7 +1062,7 @@ class GetGCPMainWindow(QMainWindow):
     def center(self):
         # center the window in the screen
         qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         

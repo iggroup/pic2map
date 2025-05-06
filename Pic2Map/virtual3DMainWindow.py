@@ -30,7 +30,7 @@ class Virtual3DMainWindow( QMainWindow):
         self.img_name = img_name.split(".")[0]
         self.picture_name = picture_name
 
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = resolution.height()/2
         self.imgSize = [img.width(), img.height()]

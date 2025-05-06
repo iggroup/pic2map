@@ -96,7 +96,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 
     def center(self):
         qr = self.frameGeometry()
-        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().geometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     
