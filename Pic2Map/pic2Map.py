@@ -93,7 +93,7 @@ class Pic2Map(object):
         # the ortho-image if used
         # the approach chosen for georeferencing
         self.ini = Initialization_dialog(self.iface)
-        self.ini.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.ini.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         #self.ini.setWindowModality(Qt.WindowModal)
         self.ini.ui.buttonBox.accepted.connect(self.startSequence)
         self.ini.show()
@@ -278,7 +278,7 @@ class Pic2Map(object):
             self.canvas.setMapTool(self.clickTool)
             # create main window
             self.gcpMainWindow = GetGCPMainWindow(self.iface, self.buffers, self.picture_name,self.pathToData,self.isFrameBufferSupported, self.crs)
-            self.gcpMainWindow.setWindowFlag(Qt.WindowStaysOnTopHint)
+            self.gcpMainWindow.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             # show the Main Window
             self.gcpMainWindow.show()
             # load the picture in the central widget

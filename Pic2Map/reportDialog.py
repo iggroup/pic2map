@@ -33,7 +33,7 @@ class ReportDialog(QtWidgets.QDialog):
     #When the Pose dialog window is closed, the errors 
     def __init__(self, model, paramBool, paramList, pathToData, xyzUnProjected, error_report):
         QtWidgets.QDialog.__init__(self)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.setWindowModality(Qt.ApplicationModal)
         self.inconsistent = False
         self.ui = Ui_ReportGCP()

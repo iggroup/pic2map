@@ -432,7 +432,7 @@ class GetGCPMainWindow(QMainWindow):
     def call3DView(self):
         # create an openGL window.
         self.view3D = D3_view(self.pointBuffer, None,  self.roll, self.FOV, 100, self.pos, self.lookat, self.upWorld, self.isFrameBufferSupported)
-        self.view3D.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.view3D.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.view3D.show()
         # emit when left click and Ctrl is pressed
         self.view3D.getGCPIn3DviewSignal.connect(self.getGCPIn3Dview) 
@@ -506,7 +506,7 @@ class GetGCPMainWindow(QMainWindow):
         rowCount = self.model.rowCount()
         # get needed inputs for pose estimation
         self.poseDialogue = Pose_dialog(self.model, self.paramPoseView, self.positionFixed, self.sizePicture, self.whoIsChecked, self.pathToData, self.picture_name, self.iface, self.crs)
-        self.poseDialogue.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.poseDialogue.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.poseDialogue.update.connect(self.updatePose)
         self.poseDialogue.importUpdate.connect(self.updateWithImport)
         if self.boolPose : 
@@ -611,7 +611,7 @@ class GetGCPMainWindow(QMainWindow):
     def iconsView(self):
         # Settings of the icons
         self.iconDia = icons_dialog(self.iconSet)
-        self.iconDia.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.iconDia.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.iconDia.show()
         result = self.iconDia.exec_()
         if result == 1:

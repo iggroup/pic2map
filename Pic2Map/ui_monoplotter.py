@@ -164,7 +164,7 @@ class Ui_Monoplotter(object):
             self.horizontalSlider.setSingleStep(1)
             self.horizontalSlider.setPageStep(1)
             self.horizontalSlider.setValue(0)
-            self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+            self.horizontalSlider.setOrientation(QtCore.Qt.Orientation.Horizontal)
             self.horizontalSlider.setTickPosition(QtWidgets.QSlider.TicksAbove)
             self.horizontalSlider.setObjectName("horizontalSlider")
             self.verticalLayout.addWidget(self.horizontalSlider)

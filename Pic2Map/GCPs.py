@@ -92,12 +92,12 @@ class GCPTableModel(QAbstractTableModel):
 
     def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
+            if orientation == Qt.Orientation.Horizontal:
                 return  int(Qt.AlignLeft|Qt.AlignVCenter)
             return  int(Qt.AlignRight|Qt.AlignVCenter)
         if role != Qt.ItemDataRole.DisplayRole:
             return  
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             if section == PCI:
                 return  "Picture u"
             elif section == PCJ:

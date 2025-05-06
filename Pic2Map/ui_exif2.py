@@ -15,7 +15,7 @@ class Ui_Exif2(object):
         Exif2.resize(481, 570)
         self.buttonBox = QtWidgets.QDialogButtonBox(Exif2)
         self.buttonBox.setGeometry(QtCore.QRect(390, 540, 75, 23))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.textBrowser = QtWidgets.QTextBrowser(Exif2)

@@ -39,7 +39,7 @@ class Ui_Mesure3DDialog(object):
         self.label_2.setObjectName("label_2")
         self.buttonBox = QtWidgets.QDialogButtonBox(Mesure3DDialog)
         self.buttonBox.setGeometry(QtCore.QRect(340, 210, 75, 23))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Close)
         self.buttonBox.setObjectName("buttonBox")
 

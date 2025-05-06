@@ -105,7 +105,7 @@ class Pose_dialog(QtWidgets.QDialog):
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
-            self.report.setWindowFlag(Qt.WindowStaysOnTopHint)
+            self.report.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             self.report.setWindowModality(Qt.ApplicationModal)
             self.report.show()
             result = self.report.exec_()
@@ -122,7 +122,7 @@ class Pose_dialog(QtWidgets.QDialog):
             if self.buttonColor == "G" :
                 self.exifInfo.ui_exif_info.saveXYButton.setEnabled(True)
                 self.exifInfo.ui_exif_info.saveXYButton.pressed.connect(self.saveXYButtonPress)
-            self.exifInfo.setWindowFlag(Qt.WindowStaysOnTopHint)
+            self.exifInfo.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             self.exifInfo.fixFocalSignal.connect(self.fixFocal)
             self.exifInfo.setWindowModality(Qt.ApplicationModal)
             self.exifInfo.show()
