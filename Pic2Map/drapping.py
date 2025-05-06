@@ -155,7 +155,7 @@ class drappingMain(QtWidgets.QMainWindow):
 #                    self.orthoSaveInstance.show()
 #                    self.orthoSaveInstance.resize(totPixE,totPixN)
 #                    self.orthoSaveInstance.resizeGL(totPixE,totPixN)
-#                    self.orthoSaveInstance.updateGL()
+#                    self.orthoSaveInstance.update()
             #self.orthoSaveInstance.saveOrtho()
             self.viewOrtho.close()   
             self.close()         

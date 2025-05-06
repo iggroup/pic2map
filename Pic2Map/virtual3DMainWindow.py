@@ -53,17 +53,17 @@ class Virtual3DMainWindow( QMainWindow):
     def sliderroll(self, val):
         # Control the roll of the picture
         self.D3_instance.roll = val/100.0
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
         
     def sliderFocal(self, val):
         # Control the focal of the picture
         self.D3_instance.FOV = val
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
         
     def sliderTransparency(self, val):
         #Control the transparency of the DEM
         self.D3_instance.transparency = val
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
 
     def closeEvent(self, event):    
         # When the window is closed, the parameters get fixed and are used for the monoplotter
@@ -253,7 +253,7 @@ class Virtual3DMainWindow( QMainWindow):
                     self.D3_instance.FOV = FOV
                     self.D3_instance.pos = pos
                     self.D3_instance.lookat = lookat
-                    self.D3_instance.updateGL()
+                    self.D3_instance.update()
                     
     def dotIt(self):
         #This function creates funny words in your DEM

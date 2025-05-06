@@ -154,7 +154,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.qgl_window.color = (0,1,1)
             self.ui.widgetCyan.setStyleSheet("background-color : rgba(0, 255, 255, 100);")
         
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def analysis(self):
         
@@ -690,7 +690,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         
     def changeTransparency(self, val):
         self.qgl_window.transparency = val*20
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def closeEvent(self, event):
         namePath = os.path.realpath(__file__)
@@ -727,7 +727,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
     def stopMeasure3D(self):
         self.ui.measure3D.setChecked(False)
         self.qgl_window.lineEditBuffer = []
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         
         
     def openLabelSettings(self):
@@ -744,7 +744,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.labelSetting[3] = self.labelSettingWindow.ui.doubleSpinBox_2.value()
             self.qgl_window.labelSettings = self.labelSetting
             self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def getOrtho(self, forPolygon = False):
         
@@ -1174,7 +1174,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.orthoSaveInstance.show()
             self.orthoSaveInstance.resize(totPixE,totPixN)
             self.orthoSaveInstance.resizeGL(totPixE,totPixN)
-            self.orthoSaveInstance.updateGL()
+            self.orthoSaveInstance.update()
         self.orthoSaveInstance.saveOrtho(name)
         self.orthoSaveInstance.close()
         
@@ -1322,7 +1322,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
 
         self.qgl_window.purpleCross(-x,value,y)
         self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         self.qgl_window.notUpdate = True
         
         
@@ -1459,7 +1459,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
                         self.qgl_window.colorPolygon.append(color)
                     
         self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         
     def getIndexSizeColorCategorie(self,value, categorie):
         indice = -1

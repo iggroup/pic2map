@@ -47,10 +47,10 @@ class Pic2Map(object):
     def checkRequirments(self):
         #Check the openGL version
         ##ex = CheckVersion()
-        ##ex.updateGL()
+        ##ex.update()
         ##self.isSupported = ex.isSupported
         ex = CheckVersion()
-        ex.updateGL()
+        ex.update()
         # Opengl 3.0 is required for Framebuffer
         self.isFrameBufferSupported =ex.isSupported
         
@@ -235,7 +235,7 @@ class Pic2Map(object):
                                                 self.isFrameBufferSupported,
                                                 self.demMax, self.demMin)#
         self.monoplotter.show()
-        self.monoplotter.qgl_window.updateGL()
+        self.monoplotter.qgl_window.update()
         self.monoplotter.openOrtho.connect(self.openOrthoWidget)
         self.monoplotter.qgl_window.blow.connect(self.clickOnMonoplotter)
         self.monoplotter.clearMapTool.connect(self.clearMapTool)
@@ -265,7 +265,7 @@ class Pic2Map(object):
             if hasattr(self, 'monoplotter'):
                 if hasattr(self.monoplotter.qgl_window, 'lineEditBuffer'):                     
                         self.monoplotter.qgl_window.lineEditBuffer = []
-                        self.monoplotter.qgl_window.updateGL()
+                        self.monoplotter.qgl_window.update()
 
     def runGCPMainWindowFromVirtual3D(self):
             self.virtual3DMainWindow.close()
@@ -410,7 +410,7 @@ class Pic2Map(object):
                         # a new point is added if the left button is clicked
                         if button == Qt.LeftButton:
                             self.monoplotter.qgl_window.lineEditBufferAppend()
-                            self.monoplotter.qgl_window.updateGL()
+                            self.monoplotter.qgl_window.update()
                         # The line edition ends if the right button is clicked
                         elif button == Qt.RightButton:
                             self.monoplotter.qgl_window.lineEditBuffer = []
@@ -421,7 +421,7 @@ class Pic2Map(object):
                         # a new point is added if the left button is clicked
                         if button == Qt.LeftButton:
                             self.monoplotter.qgl_window.lineEditBufferAppend()
-                            self.monoplotter.qgl_window.updateGL()
+                            self.monoplotter.qgl_window.update()
                         # The line edition ends if the right button is clicked
                         elif button == Qt.RightButton:
                             self.monoplotter.qgl_window.lineEditBuffer = []
@@ -449,23 +449,23 @@ class Pic2Map(object):
                         
                         self.cTool.canvasReleaseEvent(event2)
                         self.monoplotter.qgl_window.lineEditBufferAppend()
-                        self.monoplotter.qgl_window.updateGL()
+                        self.monoplotter.qgl_window.update()
                         self.cTool.activate()
                         
                     # update window
                 # the line is cleared if the right button is clicked
                 elif button == Qt.RightButton:
                     self.monoplotter.qgl_window.lineEditBuffer = []
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
         else:
             if self.monoplotter.isMeasuring3D:
                 if button == Qt.LeftButton:
                     self.monoplotter.qgl_window.lineEditBufferAppend()
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
                     self.monoplotter.dlgMeasure3D.addPoint(x,y)
                 if button == Qt.RightButton:
                     self.monoplotter.qgl_window.lineEditBuffer = []
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
                     self.monoplotter.dlgMeasure3D.removePath()
     
     def activateMeasurement(self):
