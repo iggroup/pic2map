@@ -108,7 +108,7 @@ class Pose_dialog(QtWidgets.QDialog):
             self.report.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             self.report.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.report.show()
-            result = self.report.exec_()
+            result = self.report.exec()
         else:
             QMessageBox.warning(self, "Estimation - Error",
                     "There is currently no estimation of position done with GCPs")

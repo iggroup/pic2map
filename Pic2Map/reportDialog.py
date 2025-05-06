@@ -115,11 +115,12 @@ class ReportDialog(QtWidgets.QDialog):
         path = self.pathToData + '/report.txt'
         fSaveName = QFileDialog.getSaveFileName(self, 'Save your report as...',\
                                                   path,"File (*.txt)")[0]
-        f = open(fSaveName, 'w')
-        data = self.ui.reportBrowser.toPlainText()
-        f.write(data)
-        f.close()
-        self.close()
+        if fSaveName:
+            f = open(fSaveName, 'w')
+            data = self.ui.reportBrowser.toPlainText()
+            f.write(data)
+            f.close()
+            self.close()
         
     def isBehindHill(self, paramList,errors3D):
         # For checking if a point stand behind a hill, we compare the error

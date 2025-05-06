@@ -420,8 +420,8 @@ class GetGCPMainWindow(QMainWindow):
             self.ui.graphicsView.setTransform(matrix)
             hOffset = old_div(self.ui.graphicsView.size().width(),(2.0*zoomFactorOnCross))
             vOffset = old_div(self.ui.graphicsView.size().height(),(2.0*zoomFactorOnCross))
-            hValue = (pos[0]-hOffset)*matrix.m11()
-            vValue = (pos[1]-vOffset)*matrix.m22()
+            hValue = int((pos[0]-hOffset)*matrix.m11())
+            vValue = int((pos[1]-vOffset)*matrix.m22())
             self.ui.graphicsView.horizontalScrollBar().setValue(hValue)
             self.ui.graphicsView.verticalScrollBar().setValue(vValue)
             self.countZoom = 13
