@@ -43,13 +43,12 @@ from __future__ import division
 
 from builtins import zip
 from past.utils import old_div
-from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-# from PyQt6.QtOpenGL import *
-# from OpenGL.GLU import *
-# from OpenGL.GL.framebufferobjects import *
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+from OpenGL.GL import *
+from OpenGL.GLU import *
 from numpy import sqrt, cos, sin, arccos, arctan2, zeros, array, float32, pi, linalg, cross, dot, tan
 from qgis.core import *
 
@@ -114,7 +113,7 @@ class D3_view(QOpenGLWidget):
     def mousePressEvent(self,event):
         # When clicked on the window...
          self.last_pos = event.pos()
-         modifiers = QtWidgets.QApplication.keyboardModifiers()
+         modifiers = QApplication.keyboardModifiers()
          if(event.buttons() & Qt.LeftButton and modifiers == Qt.ControlModifier):
                  #... if ctrl is pressed
                  x = event.x()
@@ -142,7 +141,7 @@ class D3_view(QOpenGLWidget):
         # Translate or rotate the view position in axis x and y (side and vertical direction)
         dx = event.x() - self.last_pos.x()
         dy = event.y() - self.last_pos.y()
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        modifiers = QApplication.keyboardModifiers()
         if (event.buttons() & Qt.RightButton):
             # Rotate the view in axis x and y (side and vertical direction)
             self.rotateBy(dy*2, 0, 0)
@@ -366,9 +365,7 @@ class D3_view(QOpenGLWidget):
             glEnable(GL_TEXTURE_2D)
             self.textureBack = glGenTextures(1)
             glBindTexture(GL_TEXTURE_2D, self.textureBack)
-            img = QtGui.QImage(self.picture_name)
-
-            img = QGLWidget.convertToGLFormat(img)
+            img = QImage(self.picture_name)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width(), img.height(),
                     0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits().asstring(img.numBytes()))
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
@@ -385,13 +382,11 @@ class D3_view(QOpenGLWidget):
             glEnable(GL_TEXTURE_2D)
             self.textures = glGenTextures(1)
             glBindTexture(GL_TEXTURE_2D, self.textures)
-            
+
             ortho_box =  self.ortho_box
-            img = QtGui.QImage(self.ortho_name)
+            img = QImage(self.ortho_name)
+            img = img.convertToFormat(QImage.Format_RGB888)
 
-            img = img.convertToFormat(QtGui.QImage.Format_RGB888)
-
-            img = QGLWidget.convertToGLFormat(img)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img.width(), img.height(),
                     0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits().asstring(img.numBytes()))
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)

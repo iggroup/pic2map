@@ -1,15 +1,9 @@
-# from OpenGL.GL import *
-from PyQt6 import QtGui, QtWidgets, QtCore
-from PyQt6.QtGui import *
-from PyQt6.QtCore import *
-from PyQt6.QtWidgets import *
-from PyQt6.QtOpenGL import *
-# from OpenGL.GLU import *
-import sys
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
+from OpenGL.GL import *
 
 
 
-class CheckVersion(QGLWidget):
+class CheckVersion(QOpenGLWidget):
     # create an openGL context for checking the version
     def __init__(self, parent = None):
         super(CheckVersion, self).__init__(parent)
