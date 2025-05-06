@@ -126,7 +126,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
     def paint(self, painter, option, index):        
         # Get Item Data
         self.owner.openPersistentEditor(index)
-        value = index.data(QtCore.Qt.DisplayRole)
+        value = index.data(QtCore.Qt.ItemDataRole.DisplayRole)
         # fill style options with item data
         style = QtWidgets.QApplication.style()
         opt = QtWidgets.QStyleOptionComboBox()
@@ -144,7 +144,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
         return editor
  
     def setEditorData(self, editor, index):
-        text = self.itemslist[index.data(QtCore.Qt.DisplayRole)]
+        text = self.itemslist[index.data(QtCore.Qt.ItemDataRole.DisplayRole)]
         pos = editor.findText(text)
         if pos == -1:  
             pos = 0

@@ -60,13 +60,13 @@ class GCPTableModel(QAbstractTableModel):
                             Qt.ItemIsEditable)
 
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or \
            not (0 <= index.row() < len(self.GCPs)):
             return 
         GCP = self.GCPs[index.row()]
         column = index.column()
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             if column == PCI:
                 return  round(GCP.picture_i,1)
             elif column == PCJ:
@@ -90,12 +90,12 @@ class GCPTableModel(QAbstractTableModel):
         return
 
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
                 return  int(Qt.AlignLeft|Qt.AlignVCenter)
             return  int(Qt.AlignRight|Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+        if role != Qt.ItemDataRole.DisplayRole:
             return  
         if orientation == Qt.Horizontal:
             if section == PCI:
@@ -125,7 +125,7 @@ class GCPTableModel(QAbstractTableModel):
         return 8
 
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if index.isValid() and 0 <= index.row() < len(self.GCPs):
             GCP = self.GCPs[index.row()]
             column = index.column()
@@ -151,7 +151,7 @@ class GCPTableModel(QAbstractTableModel):
             elif column == PIXERROR:
                 GCP.pixerror = value
             self.dirty = True
-            self.dataChanged.emit(index, index, [Qt.EditRole])
+            self.dataChanged.emit(index, index, [Qt.ItemDataRole.EditRole])
             return True
         return False
 
