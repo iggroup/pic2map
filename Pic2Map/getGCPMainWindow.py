@@ -260,7 +260,7 @@ class GetGCPMainWindow(QMainWindow):
             return
         file=QFile(fName)
 
-        if (not file.open(QIODevice.ReadOnly | QIODevice.Text)):
+        if (not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text)):
             QMessageBox.warning(self, 'Application', QString('Cannot read file %1:\n%2.').arg(fname).arg(file.errorString()))
             return False
         else:
@@ -570,13 +570,13 @@ class GetGCPMainWindow(QMainWindow):
         self.poseCanvas.setCenter(points)
         self.poseCanvas.setColor(QColor(255, 255, 0))
         self.poseCanvas.setIconSize(self.iconSet.SC)
-        self.poseCanvas.setIconType(QgsVertexMarker.ICON_BOX)
+        self.poseCanvas.setIconType(QgsVertexMarker.IconType.ICON_BOX)
         self.poseCanvas.setPenWidth(self.iconSet.WC)
         
             
     def GCPErrorPos(self):      
         nb_gcps = self.model.rowCount()
-        pen = QPen(self.iconSet.colorC, self.iconSet.WM, Qt.SolidLine)
+        pen = QPen(self.iconSet.colorC, self.iconSet.WM, Qt.PenStyle.SolidLine)
 
         # This is a dirty fix.
         self.uvTableActivated = []
@@ -632,16 +632,16 @@ class GetGCPMainWindow(QMainWindow):
         
     def wheelEvent(self, event):
         #Zoom with wheel
-        self.ui.graphicsView.setTransformationAnchor(QGraphicsView.NoAnchor)
-        self.ui.graphicsView.setResizeAnchor(QGraphicsView.NoAnchor)
+        self.ui.graphicsView.setTransformationAnchor(QGraphicsView.ViewportAnchor.NoAnchor)
+        self.ui.graphicsView.setResizeAnchor(QGraphicsView.ViewportAnchor.NoAnchor)
         
-        oldPos = self.ui.graphicsView.mapToScene(event.pos())
+        oldPos = self.ui.graphicsView.mapToScene(event.position().toPoint())
 
         factor = 1.41 ** (event.angleDelta().y() / 240.0)
         self.zoomFactor = factor
         self.resizeCross(factor)
 
-        newPos = self.ui.graphicsView.mapToScene(event.pos())
+        newPos = self.ui.graphicsView.mapToScene(event.position().toPoint())
         delta = newPos - oldPos
         self.ui.graphicsView.translate(delta.x(), delta.y())
 
@@ -651,16 +651,16 @@ class GetGCPMainWindow(QMainWindow):
         self.ZoomOutButton.setChecked(False)
         if pressed:
             self.ui.tableView.clearSelection()
-            self.ui.graphicsView.setDragMode(QGraphicsView.ScrollHandDrag)
+            self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         else:
-            self.ui.graphicsView.setDragMode(QGraphicsView.NoDrag)
+            self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.NoDrag)
     
     def ZoomOut(self, pressed):
         # zoom out when correponding button is pushed
         self.ui.statusbar.showMessage('Zoom out by clicking on the picture')
         self.ZoomInButton.setChecked(False) 
         self.PanButton.setChecked(False)
-        self.ui.graphicsView.setDragMode(QGraphicsView.NoDrag)
+        self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.NoDrag)
         
         
     def ZoomIn(self, pressed):
@@ -668,7 +668,7 @@ class GetGCPMainWindow(QMainWindow):
         self.ui.statusbar.showMessage('Zoom in by clicking on the picture')
         self.ZoomOutButton.setChecked(False)
         self.PanButton.setChecked(False)
-        self.ui.graphicsView.setDragMode(QGraphicsView.NoDrag)    
+        self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.NoDrag)    
         
  
     def resizeCross(self, factor, zoomOnGCP=False):
@@ -716,7 +716,7 @@ class GetGCPMainWindow(QMainWindow):
         row_text = row+1
         buffer = "Remove Point %d ?" % row_text
         if QMessageBox.question(self, "GCPs - Remove", buffer ,\
-                QMessageBox.Yes|QMessageBox.No) == QMessageBox.No:
+                QMessageBox.StandardButton.Yes|QMessageBox.StandardButton.No) == QMessageBox.StandardButton.No:
             return
         self.model.removeRows(row)
         self.refreshPictureGCP()
@@ -756,9 +756,9 @@ class GetGCPMainWindow(QMainWindow):
         self.ui.dockWidget_2.setFloating(False)
         if not self.goToMonoplot:    
             reply = QMessageBox.question(self, 'Message',
-                "Are you sure to quit?", QMessageBox.Yes | 
-                QMessageBox.No, QMessageBox.Yes)
-            if reply == QMessageBox.Yes:
+                "Are you sure to quit?", QMessageBox.StandardButton.Yes | 
+                QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+            if reply == QMessageBox.StandardButton.Yes:
                 event.accept()
                 if hasattr(self, 'view3D'):
                     self.view3D.close()
@@ -876,15 +876,15 @@ class GetGCPMainWindow(QMainWindow):
         return index
 
     def releaseWheel(self, ev): 
-        if ev.button() == Qt.MidButton :
-            self.ui.graphicsView.setDragMode(QGraphicsView.NoDrag)
+        if ev.button() == Qt.MouseButton.MiddleButton :
+            self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.NoDrag)
         else : 
             return
 
     def newPictureGCP(self, ev):
         # mouse event when click on the picture with the GCP tool
-        self.ui.graphicsView.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-        self.ui.graphicsView.setResizeAnchor(QGraphicsView.AnchorUnderMouse)
+        self.ui.graphicsView.setTransformationAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
+        self.ui.graphicsView.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorUnderMouse)
 
         if ev.button() == Qt.MouseButton.MiddleButton :
             self.ui.tableView.clearSelection()
@@ -970,7 +970,7 @@ class GetGCPMainWindow(QMainWindow):
         self.canvasCross[row].setCenter(points)
         self.canvasCross[row].setColor(color)
         self.canvasCross[row].setIconSize(self.iconSet.SC)
-        self.canvasCross[row].setIconType(QgsVertexMarker.ICON_CROSS)
+        self.canvasCross[row].setIconType(QgsVertexMarker.IconType.ICON_CROSS)
         self.canvasCross[row].setPenWidth(self.iconSet.WC)
         self.refreshCanvasGCPNumbers()
 
@@ -1018,7 +1018,7 @@ class GetGCPMainWindow(QMainWindow):
         self.reprojectedCross[indice_r].setCenter(points)
         self.reprojectedCross[indice_r].setColor(color)
         self.reprojectedCross[indice_r].setIconSize(self.iconSet.SC)
-        self.reprojectedCross[indice_r].setIconType(QgsVertexMarker.ICON_CROSS)
+        self.reprojectedCross[indice_r].setIconType(QgsVertexMarker.IconType.ICON_CROSS)
         self.reprojectedCross[indice_r].setPenWidth(self.iconSet.WC)
 
         self.reprojectedCross.append(QgsRubberBand(self.canvas))

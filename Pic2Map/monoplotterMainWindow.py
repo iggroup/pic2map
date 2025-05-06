@@ -494,8 +494,8 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
 
             # Close DataSource
             outDataSource.Destroy()
-            ret = QMessageBox.question(self, "Load Footprint", "Do you want to load the footprint on the canvas?", QMessageBox.Yes| QMessageBox.No)
-            if ret == QMessageBox.Yes : 
+            ret = QMessageBox.question(self, "Load Footprint", "Do you want to load the footprint on the canvas?", QMessageBox.StandardButton.Yes| QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes : 
                 self.iface.addVectorLayer(outShapefile, filename, "ogr")
             
 #        #Generate visibility mask
@@ -734,7 +734,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         # Control the settings of label in the monoplotter.
         # Label are drawn according to the current state inside the canvas
         self.labelSettingWindow = label_dialog(self.labelSetting)
-        self.labelSettingWindow.setWindowModality(Qt.ApplicationModal)
+        self.labelSettingWindow.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.labelSettingWindow.show()
         result = self.labelSettingWindow.exec_()
         if result == 1:

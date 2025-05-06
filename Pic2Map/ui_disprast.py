@@ -134,7 +134,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
         opt.rect = option.rect
  
         # draw item data as ComboBox
-        style.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, opt, painter)
+        style.drawComplexControl(QtWidgets.QStyle.ComplexControl.CC_ComboBox, opt, painter)
  
     def createEditor(self, parent, option, index):
         editor = QtWidgets.QComboBox(parent)

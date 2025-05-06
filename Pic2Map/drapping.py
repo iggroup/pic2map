@@ -87,9 +87,9 @@ class drappingMain(QtWidgets.QMainWindow):
     
     def saveOrtho(self):
         reply = QtWidgets.QMessageBox.question(self, 'Message',
-        "Continue with the current purple bounding box ?", QtWidgets.QMessageBox.Yes | 
-        QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
-        if reply == QMessageBox.Yes:
+        "Continue with the current purple bounding box ?", QtWidgets.QMessageBox.StandardButton.Yes | 
+        QtWidgets.QMessageBox.StandardButton.No, QtWidgets.QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
             meterPerPixel = self.ui.spinBox.value()
             totPixN = (old_div(self.l_nord,meterPerPixel))*self.viewOrtho.resolution
             totPixE = (old_div(self.l_est,meterPerPixel))*self.viewOrtho.resolution

@@ -56,8 +56,7 @@ class GCPTableModel(QAbstractTableModel):
     def flags(self, index):
         if not index.isValid():
             return Qt.ItemFlag.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemFlag.ItemIsEditable)
+        return QAbstractTableModel.flags(self, index)|Qt.ItemFlag.ItemIsEditable
 
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
@@ -189,7 +188,7 @@ class GCPTableModel(QAbstractTableModel):
             
             elif filename.find('.dat') != -1:
                 fh = QFile(filename)
-                if not fh.open(QIODevice.ReadOnly):
+                if not fh.open(QIODevice.OpenModeFlag.ReadOnly):
                     raise IOError(str(fh.errorString()))
                 stream = QDataStream(fh)
                 magic = stream.readInt32()

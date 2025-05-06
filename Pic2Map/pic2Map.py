@@ -197,7 +197,7 @@ class Pic2Map(object):
                                             self.isFrameBufferSupported,
                                             Xmat,
                                             Ymat)#20150923
-            self.drappingInstance.setWindowModality(Qt.ApplicationModal)
+            self.drappingInstance.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.drappingInstance.show()
             
     def goToMonoplotter(self):

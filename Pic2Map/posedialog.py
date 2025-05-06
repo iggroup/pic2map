@@ -106,7 +106,7 @@ class Pose_dialog(QtWidgets.QDialog):
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
             self.report.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
-            self.report.setWindowModality(Qt.ApplicationModal)
+            self.report.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.report.show()
             result = self.report.exec_()
         else:
@@ -124,7 +124,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 self.exifInfo.ui_exif_info.saveXYButton.pressed.connect(self.saveXYButtonPress)
             self.exifInfo.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             self.exifInfo.fixFocalSignal.connect(self.fixFocal)
-            self.exifInfo.setWindowModality(Qt.ApplicationModal)
+            self.exifInfo.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.exifInfo.show()
         except:
             QMessageBox.warning(self, "Read - Error","Failed to load EXIF information.\nPicture may not have meta-data" )
@@ -1141,6 +1141,6 @@ class Pose_dialog(QtWidgets.QDialog):
 
             # Close DataSource
             outDataSource.Destroy()
-            ret = QMessageBox.question(self, "Load Camera Position", "Do you want to load the camera position on the canvas?", QMessageBox.Yes| QMessageBox.No)
-            if ret == QMessageBox.Yes : 
+            ret = QMessageBox.question(self, "Load Camera Position", "Do you want to load the camera position on the canvas?", QMessageBox.StandardButton.Yes| QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes : 
                 self.iface.addVectorLayer(outShapefile, filename, "ogr")

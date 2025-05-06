@@ -166,12 +166,12 @@ class Virtual3DMainWindow( QMainWindow):
             return
         file=QFile(fName)
 
-        if (not file.open(QIODevice.ReadOnly | QIODevice.Text)):
+        if (not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text)):
             QMessageBox.warning(self, 'Application', QString('Cannot read file %1:\n%2.').arg(fname).arg(file.errorString()))
             return False
         else:
             # FIXME QtXml is no longer supported.
-            doc = QtXml.QDomDocument("EnvironmentML");
+            doc = QtXml.QDomDocument("EnvironmentML")
             if(not doc.setContent(file)):
                 file.close()
                 QMessageBox.warning(self,"Error","Could not parse xml file.")

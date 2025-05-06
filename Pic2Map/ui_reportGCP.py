@@ -24,7 +24,7 @@ class Ui_ReportGCP(object):
         self.gridLayout.addWidget(self.pushButton, 1, 0, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(ReportGCP)
         self.buttonBox.setOrientation(QtCore.Qt.Orientation.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 1, 1, 1, 1)
 
