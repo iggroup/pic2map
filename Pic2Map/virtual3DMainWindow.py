@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from qgis.core import *
 from .D3View import D3_view
-from .ui_d3_virtual import Ui_D3
+from .ui.ui_d3_virtual import Ui_D3
 from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, arcsin
 # FIXME QtXml is no longer supported.
 from PyQt6 import QtXml

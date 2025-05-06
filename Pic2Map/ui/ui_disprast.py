@@ -1,17 +1,7 @@
 # -*- coding: utf-8 -*-
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtGui import QAction
 
-# Form implementation generated from reading ui file 'ui_disprast.ui'
-#
-# Created: Thu Feb 27 15:00:19 2014
-#      by: PyQt4 UI code generator 4.10.3
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtCore import *
-
-
-from PyQt6.QtGui import *
 try:
     _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):

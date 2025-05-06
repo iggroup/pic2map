@@ -18,7 +18,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
-from .ui_disp_ini import Ui_Dialog
+from .ui.ui_disp_ini import Ui_Dialog
 import webbrowser
 import os, tempfile
 from osgeo import gdal

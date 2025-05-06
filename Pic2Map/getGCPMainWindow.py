@@ -31,7 +31,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
-from .ui_disprast import Ui_disprast
+from .ui.ui_disprast import Ui_disprast
 from .iconsdialog import icons_dialog
 from .posedialog import Pose_dialog
 from PIL import Image

@@ -13,7 +13,7 @@ from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from .ui_icons import Ui_iconsDialog
+from .ui.ui_icons import Ui_iconsDialog
 from functools import partial
 
 class icons_dialog(QtWidgets.QDialog):

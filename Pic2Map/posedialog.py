@@ -25,7 +25,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from .ui_pose import Ui_Pose
+from .ui.ui_pose import Ui_Pose
 from copy import copy
 from PIL import Image
 import piexif

@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
 from math import  sqrt
-from .ui_mesure3D import Ui_Mesure3DDialog
+from .ui.ui_mesure3D import Ui_Mesure3DDialog
 
 class mesure3DDialog(QtWidgets.QDialog):
     closeSignal= pyqtSignal()

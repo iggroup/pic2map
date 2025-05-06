@@ -1,12 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'U:\pic2map-master\pic2map-master\Pic2Map\ui\ui_help_ini.ui'
-#
-# Created by: PyQt6 UI code generator 5.12.2
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 
 class Ui_Dialog(object):

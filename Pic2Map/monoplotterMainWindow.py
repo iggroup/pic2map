@@ -29,9 +29,9 @@ from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
 from .QGL_monoplotter import QGLMonoplotter
-from .ui_monoplotter import Ui_Monoplotter
+from .ui.ui_monoplotter import Ui_Monoplotter
 from .drapping import drappingMain
-from .ui_buffering import Ui_Form
+from .ui.ui_buffering import Ui_Form
 from .labelSettingsDialog import label_dialog
 from .measure3D import mesure3DDialog
 from .ortho import viewOrtho_class

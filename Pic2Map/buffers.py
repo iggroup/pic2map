@@ -19,7 +19,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from numpy import array, zeros, size, repeat, float32, uint32, max, min
 from osgeo import gdal
-from .ui_buffering import Ui_Form
+from .ui.ui_buffering import Ui_Form
 import operator
 
 class Buffers(QtWidgets.QWidget):

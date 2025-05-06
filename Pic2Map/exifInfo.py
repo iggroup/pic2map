@@ -19,7 +19,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from PIL import Image
 from PIL.ExifTags import TAGS
-from .ui_exif2 import Ui_Exif2
+from .ui.ui_exif2 import Ui_Exif2
 from qgis.core import *
 from qgis.gui import *
 from numpy import sqrt

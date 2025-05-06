@@ -13,7 +13,7 @@ from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from .ui_label_settings import Ui_LabelSetting
+from .ui.ui_label_settings import Ui_LabelSetting
 from functools import partial
 
 class label_dialog(QtWidgets.QDialog):

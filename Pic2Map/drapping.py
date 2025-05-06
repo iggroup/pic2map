@@ -19,7 +19,7 @@ from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
-from .ui_drapping import Ui_drapping
+from .ui.ui_drapping import Ui_drapping
 from .ortho import viewOrtho_class, orthoClass
 from scipy import misc
 from numpy import array
