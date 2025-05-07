@@ -22,7 +22,7 @@ from __future__ import print_function
 from builtins import str
 from builtins import range
 from past.utils import old_div
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtGui, QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -30,7 +30,6 @@ from qgis.core import *
 from qgis.gui import *
 from .QGL_monoplotter import QGLMonoplotter
 from .ui.ui_monoplotter import Ui_Monoplotter
-from .drapping import drappingMain
 from .ui.ui_buffering import Ui_Form
 from .labelSettingsDialog import label_dialog
 from .measure3D import mesure3DDialog
@@ -38,8 +37,6 @@ from .ortho import viewOrtho_class
 from osgeo import gdal, osr, ogr
 import os
 from PIL import Image
-from scipy import misc
-from scipy.spatial import KDTree
 from numpy import zeros, concatenate, dot, linalg, pi, arctan2, ones, array
 import numpy as np
 import matplotlib.pyplot as plt

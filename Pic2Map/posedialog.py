@@ -20,21 +20,19 @@ from __future__ import print_function
 from builtins import str
 from builtins import range
 from past.utils import old_div
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from .ui.ui_pose import Ui_Pose
-from copy import copy
 from PIL import Image
 import piexif
-from numpy import any, zeros, array, sin, cos, dot, linalg, pi, asarray, mean, std, min, max, sqrt, flipud, std, concatenate, ones, arccos, arcsin, arctan,arctan2, size, abs, matrix, diag
+from numpy import zeros, array, sin, cos, dot, linalg, pi, mean, std, min, max, sqrt, std, arcsin, arctan, abs
 from .reportDialog import ReportDialog
 from .exifInfo import ExifInfo
 from osgeo import ogr, osr
 from qgis.core import *
 from qgis.gui import *
-from qgis.utils import iface
 import os
 from .GCPs import GCPTableModel
 from .smapshotgeoreferencer import georeferencerUtils as georef_utils

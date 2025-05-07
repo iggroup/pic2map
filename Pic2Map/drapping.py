@@ -13,7 +13,7 @@ from __future__ import print_function
 
 from builtins import str
 from past.utils import old_div
-from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -21,7 +21,6 @@ from qgis.core import *
 from qgis.gui import *
 from .ui.ui_drapping import Ui_drapping
 from .ortho import viewOrtho_class, orthoClass
-from scipy import misc
 from numpy import array
 from PIL import Image
 

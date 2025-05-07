@@ -13,7 +13,6 @@ from __future__ import division
 
 from builtins import str
 from past.utils import old_div
-from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *

@@ -25,7 +25,6 @@ from builtins import str
 from builtins import range
 from builtins import object
 from past.utils import old_div
-from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
@@ -35,14 +34,12 @@ from .ui.ui_disprast import Ui_disprast
 from .iconsdialog import icons_dialog
 from .posedialog import Pose_dialog
 from PIL import Image
-from PIL import ImageQt
-from PIL import ImageEnhance
 from .GCPs import *
-from numpy import arctan, arctan2, arcsin, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
+from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
 from .D3View import D3_view
 # FIXME QtXml is no longer supported.
 from PyQt6 import QtXml
-import os, time
+import os
 from math import ceil
 
 try:

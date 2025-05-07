@@ -16,12 +16,12 @@
 from builtins import zip
 from builtins import str
 from builtins import range
-from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from .ui.ui_reportGCP import Ui_ReportGCP
-from numpy import mean, min, max, std, zeros, sqrt, pi
+from numpy import zeros, sqrt, pi
 # create the dialog for zoom to point
 
 class ReportDialog(QtWidgets.QDialog):

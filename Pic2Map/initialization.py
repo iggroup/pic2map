@@ -11,10 +11,9 @@
 """
 
 from builtins import str
-import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
