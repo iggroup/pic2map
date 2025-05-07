@@ -1,17 +1,7 @@
 # -*- coding: utf-8 -*-
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtGui import QAction
 
-# Form implementation generated from reading ui file 'ui_disprast.ui'
-#
-# Created: Thu Feb 27 15:00:19 2014
-#      by: PyQt4 UI code generator 4.10.3
-#
-# WARNING! All changes made in this file will be lost!
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import *
-
-
-from PyQt5.QtGui import *
 try:
     _encoding = QtWidgets.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
@@ -26,7 +16,7 @@ class Ui_disprast(object):
         disprast.resize(766, 836)
         disprast.setAnimated(True)
         self.centralwidget = QtWidgets.QWidget(disprast)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
@@ -36,7 +26,7 @@ class Ui_disprast(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.graphicsView = QtWidgets.QGraphicsView(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.graphicsView.sizePolicy().hasHeightForWidth())
@@ -50,36 +40,36 @@ class Ui_disprast(object):
         self.dockWidget_2 = QtWidgets.QDockWidget(disprast)
         self.dockWidget_2.setFloating(False)
         self.dockWidget_2.setObjectName("dockWidget_2")
-        self.dockWidget_2.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetFloatable)
+        self.dockWidget_2.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable)
         self.dockWidgetContents_2 = QtWidgets.QWidget()
         self.dockWidgetContents_2.setObjectName("dockWidgetContents_2")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.dockWidgetContents_2)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.tableView = TableView(self.dockWidgetContents_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tableView.sizePolicy().hasHeightForWidth())
         self.tableView.setSizePolicy(sizePolicy)
         self.tableView.setMouseTracking(False)
         self.tableView.setAutoFillBackground(False)
-        self.tableView.setInputMethodHints(QtCore.Qt.ImhNone)
-        self.tableView.setFrameShape(QtWidgets.QFrame.Box)
-        self.tableView.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.tableView.setInputMethodHints(QtCore.Qt.InputMethodHint.ImhNone)
+        self.tableView.setFrameShape(QtWidgets.QFrame.Shape.Box)
+        self.tableView.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.tableView.setMidLineWidth(2)
-        self.tableView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
-        self.tableView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
+        self.tableView.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.tableView.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.tableView.setAutoScroll(False)
-        self.tableView.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
+        self.tableView.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.DoubleClicked)
         self.tableView.setTabKeyNavigation(True)
         self.tableView.setProperty("showDropIndicator", False)
         #self.tableView.setDragDropOverwriteMode(False)
         #self.tableView.setDefaultDropAction(QtCore.Qt.CopyAction)
         self.tableView.setAlternatingRowColors(True)
-        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
-        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.tableView.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
+        self.tableView.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableView.setShowGrid(True)
-        self.tableView.setGridStyle(QtCore.Qt.SolidLine)
+        self.tableView.setGridStyle(QtCore.Qt.PenStyle.SolidLine)
         self.tableView.setSortingEnabled(False)
         self.tableView.setWordWrap(True)
         self.tableView.setCornerButtonEnabled(False)
@@ -88,15 +78,15 @@ class Ui_disprast(object):
         self.verticalLayout_2.addWidget(self.tableView)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
         disprast.addDockWidget(QtCore.Qt.DockWidgetArea(8), self.dockWidget_2)
-        self.actionOption1_1 = QtWidgets.QAction(disprast)
+        self.actionOption1_1 = QAction(disprast)
         self.actionOption1_1.setObjectName("actionOption1_1")
-        self.actionOption1_2 = QtWidgets.QAction(disprast)
+        self.actionOption1_2 = QAction(disprast)
         self.actionOption1_2.setObjectName("actionOption1_2")
-        self.actionOption1_3_1 = QtWidgets.QAction(disprast)
+        self.actionOption1_3_1 = QAction(disprast)
         self.actionOption1_3_1.setObjectName("actionOption1_3_1")
-        self.actionOption1_3_2 = QtWidgets.QAction(disprast)
+        self.actionOption1_3_2 = QAction(disprast)
         self.actionOption1_3_2.setObjectName("actionOption1_3_2")
-        self.actionOption2_1 = QtWidgets.QAction(disprast)
+        self.actionOption2_1 = QAction(disprast)
         self.actionOption2_1.setObjectName("actionOption2_1")
 
         self.retranslateUi(disprast)
@@ -126,7 +116,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
     def paint(self, painter, option, index):        
         # Get Item Data
         self.owner.openPersistentEditor(index)
-        value = index.data(QtCore.Qt.DisplayRole)
+        value = index.data(QtCore.Qt.ItemDataRole.DisplayRole)
         # fill style options with item data
         style = QtWidgets.QApplication.style()
         opt = QtWidgets.QStyleOptionComboBox()
@@ -134,7 +124,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
         opt.rect = option.rect
  
         # draw item data as ComboBox
-        style.drawComplexControl(QtWidgets.QStyle.CC_ComboBox, opt, painter)
+        style.drawComplexControl(QtWidgets.QStyle.ComplexControl.CC_ComboBox, opt, painter)
  
     def createEditor(self, parent, option, index):
         editor = QtWidgets.QComboBox(parent)
@@ -144,7 +134,7 @@ class ComboBoxDelegate(QtWidgets.QItemDelegate):
         return editor
  
     def setEditorData(self, editor, index):
-        text = self.itemslist[index.data(QtCore.Qt.DisplayRole)]
+        text = self.itemslist[index.data(QtCore.Qt.ItemDataRole.DisplayRole)]
         pos = editor.findText(text)
         if pos == -1:  
             pos = 0

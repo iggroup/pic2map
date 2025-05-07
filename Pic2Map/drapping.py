@@ -13,13 +13,13 @@ from __future__ import print_function
 
 from builtins import str
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
-from .ui_drapping import Ui_drapping
+from .ui.ui_drapping import Ui_drapping
 from .ortho import viewOrtho_class, orthoClass
 from scipy import misc
 from numpy import array
@@ -64,7 +64,7 @@ class drappingMain(QtWidgets.QMainWindow):
         
         self.viewOrtho.makeCurrent()
         self.setCentralWidget(self.viewOrtho)
-        self.resolution = QDesktopWidget().screenGeometry()
+        self.resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = old_div(self.resolution.height(),2)
         l_nord =  pointBuffer.l_nord
@@ -87,9 +87,9 @@ class drappingMain(QtWidgets.QMainWindow):
     
     def saveOrtho(self):
         reply = QtWidgets.QMessageBox.question(self, 'Message',
-        "Continue with the current purple bounding box ?", QtWidgets.QMessageBox.Yes | 
-        QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
-        if reply == QMessageBox.Yes:
+        "Continue with the current purple bounding box ?", QtWidgets.QMessageBox.StandardButton.Yes | 
+        QtWidgets.QMessageBox.StandardButton.No, QtWidgets.QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
             meterPerPixel = self.ui.spinBox.value()
             totPixN = (old_div(self.l_nord,meterPerPixel))*self.viewOrtho.resolution
             totPixE = (old_div(self.l_est,meterPerPixel))*self.viewOrtho.resolution
@@ -155,7 +155,7 @@ class drappingMain(QtWidgets.QMainWindow):
 #                    self.orthoSaveInstance.show()
 #                    self.orthoSaveInstance.resize(totPixE,totPixN)
 #                    self.orthoSaveInstance.resizeGL(totPixE,totPixN)
-#                    self.orthoSaveInstance.updateGL()
+#                    self.orthoSaveInstance.update()
             #self.orthoSaveInstance.saveOrtho()
             self.viewOrtho.close()   
             self.close()         

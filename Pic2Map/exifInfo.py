@@ -13,13 +13,13 @@ from __future__ import division
 
 from builtins import str
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from PIL import Image
 from PIL.ExifTags import TAGS
-from .ui_exif2 import Ui_Exif2
+from .ui.ui_exif2 import Ui_Exif2
 from qgis.core import *
 from qgis.gui import *
 from numpy import sqrt

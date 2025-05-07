@@ -15,10 +15,10 @@ from builtins import object
 import platform
 import csv
 
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 PCI, PCJ, LOCX, LOCY, LOCZ, CHECK, ERROR, PIXERROR = list(range(8))
 MAGIC_NUMBER = 0x570C4
 FILE_VERSION = 1
@@ -55,18 +55,17 @@ class GCPTableModel(QAbstractTableModel):
         
     def flags(self, index):
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|
-                            Qt.ItemIsEditable)
+            return Qt.ItemFlag.ItemIsEnabled
+        return QAbstractTableModel.flags(self, index)|Qt.ItemFlag.ItemIsEditable
 
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if not index.isValid() or \
            not (0 <= index.row() < len(self.GCPs)):
             return 
         GCP = self.GCPs[index.row()]
         column = index.column()
-        if role == Qt.DisplayRole:
+        if role == Qt.ItemDataRole.DisplayRole:
             if column == PCI:
                 return  round(GCP.picture_i,1)
             elif column == PCJ:
@@ -83,21 +82,21 @@ class GCPTableModel(QAbstractTableModel):
                 return  round(GCP.error,1)
             elif column == PIXERROR:
                 return  round(GCP.pixerror,1)
-        elif role == Qt.TextAlignmentRole:
-            return  int(Qt.AlignLeft|Qt.AlignVCenter)
-        elif role == Qt.BackgroundColorRole:
+        elif role == Qt.ItemDataRole.TextAlignmentRole:
+            return  int(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        elif role == Qt.ItemDataRole.BackgroundRole:
                 return  QColor(210, 230, 230)
         return
 
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return  int(Qt.AlignLeft|Qt.AlignVCenter)
-            return  int(Qt.AlignRight|Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            if orientation == Qt.Orientation.Horizontal:
+                return  int(Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+            return  int(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignVCenter)
+        if role != Qt.ItemDataRole.DisplayRole:
             return  
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Orientation.Horizontal:
             if section == PCI:
                 return  "Picture u"
             elif section == PCJ:
@@ -125,7 +124,7 @@ class GCPTableModel(QAbstractTableModel):
         return 8
 
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.ItemDataRole.EditRole):
         if index.isValid() and 0 <= index.row() < len(self.GCPs):
             GCP = self.GCPs[index.row()]
             column = index.column()
@@ -151,7 +150,7 @@ class GCPTableModel(QAbstractTableModel):
             elif column == PIXERROR:
                 GCP.pixerror = value
             self.dirty = True
-            self.dataChanged.emit(index, index, [Qt.EditRole])
+            self.dataChanged.emit(index, index, [Qt.ItemDataRole.EditRole])
             return True
         return False
 
@@ -189,7 +188,7 @@ class GCPTableModel(QAbstractTableModel):
             
             elif filename.find('.dat') != -1:
                 fh = QFile(filename)
-                if not fh.open(QIODevice.ReadOnly):
+                if not fh.open(QIODevice.OpenModeFlag.ReadOnly):
                     raise IOError(str(fh.errorString()))
                 stream = QDataStream(fh)
                 magic = stream.readInt32()

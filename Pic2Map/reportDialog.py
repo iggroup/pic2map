@@ -16,11 +16,11 @@
 from builtins import zip
 from builtins import str
 from builtins import range
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from .ui_reportGCP import Ui_ReportGCP
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from .ui.ui_reportGCP import Ui_ReportGCP
 from numpy import mean, min, max, std, zeros, sqrt, pi
 # create the dialog for zoom to point
 
@@ -33,8 +33,8 @@ class ReportDialog(QtWidgets.QDialog):
     #When the Pose dialog window is closed, the errors 
     def __init__(self, model, paramBool, paramList, pathToData, xyzUnProjected, error_report):
         QtWidgets.QDialog.__init__(self)
-        self.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.inconsistent = False
         self.ui = Ui_ReportGCP()
         self.ui.setupUi(self)
@@ -106,7 +106,7 @@ class ReportDialog(QtWidgets.QDialog):
             
     def center(self):
         qr = self.frameGeometry()
-        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         
@@ -115,11 +115,12 @@ class ReportDialog(QtWidgets.QDialog):
         path = self.pathToData + '/report.txt'
         fSaveName = QFileDialog.getSaveFileName(self, 'Save your report as...',\
                                                   path,"File (*.txt)")[0]
-        f = open(fSaveName, 'w')
-        data = self.ui.reportBrowser.toPlainText()
-        f.write(data)
-        f.close()
-        self.close()
+        if fSaveName:
+            f = open(fSaveName, 'w')
+            data = self.ui.reportBrowser.toPlainText()
+            f.write(data)
+            f.close()
+            self.close()
         
     def isBehindHill(self, paramList,errors3D):
         # For checking if a point stand behind a hill, we compare the error

@@ -21,11 +21,11 @@ from __future__ import print_function
 from builtins import str
 from builtins import range
 from past.utils import old_div
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from .ui_pose import Ui_Pose
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from .ui.ui_pose import Ui_Pose
 from copy import copy
 from PIL import Image
 import piexif
@@ -96,7 +96,7 @@ class Pose_dialog(QtWidgets.QDialog):
                 
     def center(self):
         qr = self.frameGeometry()
-        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().geometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     
@@ -105,10 +105,10 @@ class Pose_dialog(QtWidgets.QDialog):
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
-            self.report.setWindowFlag(Qt.WindowStaysOnTopHint)
-            self.report.setWindowModality(Qt.ApplicationModal)
+            self.report.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
+            self.report.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.report.show()
-            result = self.report.exec_()
+            result = self.report.exec()
         else:
             QMessageBox.warning(self, "Estimation - Error",
                     "There is currently no estimation of position done with GCPs")
@@ -122,9 +122,9 @@ class Pose_dialog(QtWidgets.QDialog):
             if self.buttonColor == "G" :
                 self.exifInfo.ui_exif_info.saveXYButton.setEnabled(True)
                 self.exifInfo.ui_exif_info.saveXYButton.pressed.connect(self.saveXYButtonPress)
-            self.exifInfo.setWindowFlag(Qt.WindowStaysOnTopHint)
+            self.exifInfo.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             self.exifInfo.fixFocalSignal.connect(self.fixFocal)
-            self.exifInfo.setWindowModality(Qt.ApplicationModal)
+            self.exifInfo.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.exifInfo.show()
         except:
             QMessageBox.warning(self, "Read - Error","Failed to load EXIF information.\nPicture may not have meta-data" )
@@ -1141,6 +1141,6 @@ class Pose_dialog(QtWidgets.QDialog):
 
             # Close DataSource
             outDataSource.Destroy()
-            ret = QMessageBox.question(self, "Load Camera Position", "Do you want to load the camera position on the canvas?", QMessageBox.Yes| QMessageBox.No)
-            if ret == QMessageBox.Yes : 
+            ret = QMessageBox.question(self, "Load Camera Position", "Do you want to load the camera position on the canvas?", QMessageBox.StandardButton.Yes| QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes : 
                 self.iface.addVectorLayer(outShapefile, filename, "ogr")
