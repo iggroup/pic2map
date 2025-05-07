@@ -129,12 +129,11 @@ class Pose_dialog(QtWidgets.QDialog):
         for item in self.exifInfo.transformCoord : 
             if item[1] == "pos" :
                 self.uiPoseDialog.XPosLine.setText(str(round(item[0][0],3)))
-                self.uiPoseDialog.XPosIni.setChecked(True)
                 self.uiPoseDialog.YPosLine.setText(str(round(item[0][1],3)))
-                self.uiPoseDialog.YPosIni.setChecked(True)
+                self.uiPoseDialog.XYZPosIni.setChecked(True)
             elif item[1] == "alt" :
                 self.uiPoseDialog.ZPosLine.setText(str(round(item[0],3)))
-                self.uiPoseDialog.ZPosIni.setChecked(True)
+                self.uiPoseDialog.XYZPosIni.setChecked(True)
 
             elif item [1] == "heading" :
                 self.uiPoseDialog.headingLine.setText(str(round(item[0],3)))

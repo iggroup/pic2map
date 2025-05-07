@@ -35,110 +35,84 @@ class Ui_PoseDialog(object):
         self.parametersGridLayout = QtWidgets.QGridLayout(self.frame)
         self.parametersGridLayout.setObjectName(_fromUtf8("parametersGridLayout"))
 
-        self.XPosFree = QtWidgets.QRadioButton(self.frame)
-        self.XPosFree.setObjectName(_fromUtf8("XPosFree"))
-        self.XPosFixed = QtWidgets.QRadioButton(self.frame)
-        self.XPosFixed.setObjectName(_fromUtf8("XPosFixed"))
-        self.XPosIni = QtWidgets.QRadioButton(self.frame)
-        self.XPosIni.setObjectName(_fromUtf8("XPosIni"))
-        self.XPosGroup = QtWidgets.QButtonGroup(PoseDialog)
-        self.XPosGroup.setObjectName(_fromUtf8("XPosGroup"))
-        self.XPosGroup.addButton(self.XPosFixed)
-        self.XPosGroup.addButton(self.XPosFree)
-        self.XPosGroup.addButton(self.XPosIni)
-        self.parametersGridLayout.addWidget(self.XPosFree, 0, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.XPosFixed, 0, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.XPosIni, 0, 3, 1, 1)
-        
-        self.YPosFree = QtWidgets.QRadioButton(self.frame)
-        self.YPosFree.setObjectName(_fromUtf8("YPosFree"))
-        self.YPosFixed = QtWidgets.QRadioButton(self.frame)
-        self.YPosFixed.setObjectName(_fromUtf8("YPosFixed"))
-        self.YPosIni = QtWidgets.QRadioButton(self.frame)
-        self.YPosIni.setObjectName(_fromUtf8("YPosIni"))
-        self.YPosGroup = QtWidgets.QButtonGroup(PoseDialog)
-        self.YPosGroup.setObjectName(_fromUtf8("YPosGroup"))
-        self.YPosGroup.addButton(self.YPosFree)
-        self.YPosGroup.addButton(self.YPosFixed)
-        self.YPosGroup.addButton(self.YPosIni)
-        self.parametersGridLayout.addWidget(self.YPosFree, 1, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.YPosFixed, 1, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.YPosIni, 1, 3, 1, 1)
-
-        self.ZPosFree = QtWidgets.QRadioButton(self.frame)
-        self.ZPosFree.setObjectName(_fromUtf8("ZPosFree"))
-        self.ZPosFixed = QtWidgets.QRadioButton(self.frame)
-        self.ZPosFixed.setObjectName(_fromUtf8("ZPosFixed"))
-        self.ZPosIni = QtWidgets.QRadioButton(self.frame)
-        self.ZPosIni.setObjectName(_fromUtf8("ZPosIni"))
-        self.ZPoseGroup = QtWidgets.QButtonGroup(PoseDialog)
-        self.ZPoseGroup.setObjectName(_fromUtf8("ZPoseGroup"))
-        self.ZPoseGroup.addButton(self.ZPosFixed)
-        self.ZPoseGroup.addButton(self.ZPosFree)
-        self.ZPoseGroup.addButton(self.ZPosIni)
-        self.parametersGridLayout.addWidget(self.ZPosFree, 2, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.ZPosFixed, 2, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.ZPosIni, 2, 3, 1, 1)
+        self.XYZPosFree = QtWidgets.QRadioButton(self.frame)
+        self.XYZPosFree.setObjectName(_fromUtf8("XYZPosFree"))
+        self.XYZPosIni = QtWidgets.QRadioButton(self.frame)
+        self.XYZPosIni.setObjectName(_fromUtf8("XYZPosIni"))
+        self.XYZPosFixed = QtWidgets.QRadioButton(self.frame)
+        self.XYZPosFixed.setObjectName(_fromUtf8("XYZPosFixed"))
+        self.XYZPosGroup = QtWidgets.QButtonGroup(PoseDialog)
+        self.XYZPosGroup.setObjectName(_fromUtf8("XYZPosGroup"))
+        self.XYZPosGroup.addButton(self.XYZPosFree)
+        self.XYZPosGroup.addButton(self.XYZPosIni)
+        self.XYZPosGroup.addButton(self.XYZPosFixed)
+        self.parametersGridLayout.addWidget(self.XYZPosFree, 0, 1, 1, 1)
+        self.parametersGridLayout.addWidget(self.XYZPosIni, 0, 2, 1, 1)
+        self.parametersGridLayout.addWidget(self.XYZPosFixed, 0, 3, 1, 1)
         
         self.tiltFree = QtWidgets.QRadioButton(self.frame)
         self.tiltFree.setObjectName(_fromUtf8("tiltFree"))
-        self.tiltFixed = QtWidgets.QRadioButton(self.frame)
-        self.tiltFixed.setObjectName(_fromUtf8("tiltFixed"))
         self.tiltIni = QtWidgets.QRadioButton(self.frame)
         self.tiltIni.setObjectName(_fromUtf8("tiltIni"))
+        self.tiltFixed = QtWidgets.QRadioButton(self.frame)
+        self.tiltFixed.setObjectName(_fromUtf8("tiltFixed"))
         self.tiltgroup = QtWidgets.QButtonGroup(PoseDialog)
         self.tiltgroup.setObjectName(_fromUtf8("tiltgroup"))
         self.tiltgroup.addButton(self.tiltFree)
-        self.tiltgroup.addButton(self.tiltFixed)
         self.tiltgroup.addButton(self.tiltIni)
-        self.parametersGridLayout.addWidget(self.tiltFree, 3, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.tiltFixed, 3, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.tiltIni, 3, 3, 1, 1)
+        self.tiltgroup.addButton(self.tiltFixed)
+        self.parametersGridLayout.addWidget(self.tiltFree, 1, 1, 1, 1)
+        self.parametersGridLayout.addWidget(self.tiltIni, 1, 2, 1, 1)
+        self.parametersGridLayout.addWidget(self.tiltFixed, 1, 3, 1, 1)
+        self.tiltFixed.hide() # Not used by the new Smapshot API
         
         self.headingFree = QtWidgets.QRadioButton(self.frame)
         self.headingFree.setObjectName(_fromUtf8("headingFree"))
-        self.headingFixed = QtWidgets.QRadioButton(self.frame)
-        self.headingFixed.setObjectName(_fromUtf8("headingFixed"))
         self.headingIni = QtWidgets.QRadioButton(self.frame)
         self.headingIni.setObjectName(_fromUtf8("headingIni"))
+        self.headingFixed = QtWidgets.QRadioButton(self.frame)
+        self.headingFixed.setObjectName(_fromUtf8("headingFixed"))
         self.headinggroup = QtWidgets.QButtonGroup(PoseDialog)
         self.headinggroup.setObjectName(_fromUtf8("headinggroup"))
         self.headinggroup.addButton(self.headingFree)
-        self.headinggroup.addButton(self.headingFixed)
         self.headinggroup.addButton(self.headingIni)
-        self.parametersGridLayout.addWidget(self.headingFree, 4, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.headingFixed, 4, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.headingIni, 4, 3, 1, 1)
+        self.headinggroup.addButton(self.headingFixed)
+        self.parametersGridLayout.addWidget(self.headingFree, 2, 1, 1, 1)
+        self.parametersGridLayout.addWidget(self.headingIni, 2, 2, 1, 1)
+        self.parametersGridLayout.addWidget(self.headingFixed, 2, 3, 1, 1)
+        self.headingFixed.hide() # Not used by the new Smapshot API
         
         self.swingFree = QtWidgets.QRadioButton(self.frame)
         self.swingFree.setObjectName(_fromUtf8("swingFree"))
-        self.swingFixed = QtWidgets.QRadioButton(self.frame)
-        self.swingFixed.setObjectName(_fromUtf8("swingFixed"))
         self.swingIni = QtWidgets.QRadioButton(self.frame)
         self.swingIni.setObjectName(_fromUtf8("swingIni"))
+        self.swingFixed = QtWidgets.QRadioButton(self.frame)
+        self.swingFixed.setObjectName(_fromUtf8("swingFixed"))
         self.swinggroup = QtWidgets.QButtonGroup(PoseDialog)
         self.swinggroup.setObjectName(_fromUtf8("swinggroup"))
         self.swinggroup.addButton(self.swingFree)
-        self.swinggroup.addButton(self.swingFixed)
         self.swinggroup.addButton(self.swingIni)
-        self.parametersGridLayout.addWidget(self.swingFree, 5, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.swingFixed, 5, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.swingIni, 5, 3, 1, 1)
+        self.swinggroup.addButton(self.swingFixed)
+        self.parametersGridLayout.addWidget(self.swingFree, 3, 1, 1, 1)
+        self.parametersGridLayout.addWidget(self.swingIni, 3, 2, 1, 1)
+        self.parametersGridLayout.addWidget(self.swingFixed, 3, 3, 1, 1)
+        self.swingFixed.hide() # Not used by the new Smapshot API
         
         self.focalFree = QtWidgets.QRadioButton(self.frame)
         self.focalFree.setObjectName(_fromUtf8("focalFree"))
-        self.focalFixed = QtWidgets.QRadioButton(self.frame)
-        self.focalFixed.setObjectName(_fromUtf8("focalFixed"))
         self.focalIni = QtWidgets.QRadioButton(self.frame)
         self.focalIni.setObjectName(_fromUtf8("focalIni"))
+        self.focalFixed = QtWidgets.QRadioButton(self.frame)
+        self.focalFixed.setObjectName(_fromUtf8("focalFixed"))
         self.focalgroup = QtWidgets.QButtonGroup(PoseDialog)
         self.focalgroup.setObjectName(_fromUtf8("focalgroup"))
-        self.focalgroup.addButton(self.focalFixed)
         self.focalgroup.addButton(self.focalFree)
         self.focalgroup.addButton(self.focalIni)
-        self.parametersGridLayout.addWidget(self.focalFree, 6, 1, 1, 1)
-        self.parametersGridLayout.addWidget(self.focalFixed, 6, 2, 1, 1)
-        self.parametersGridLayout.addWidget(self.focalIni, 6, 3, 1, 1)
+        self.focalgroup.addButton(self.focalFixed)
+        self.parametersGridLayout.addWidget(self.focalFree, 4, 1, 1, 1)
+        self.parametersGridLayout.addWidget(self.focalIni, 4, 2, 1, 1)
+        self.parametersGridLayout.addWidget(self.focalFixed, 4, 3, 1, 1)
+        self.focalFixed.hide() # Not used by the new Smapshot API
 
         self.XPosLine = QtWidgets.QLineEdit(self.frame)
         self.XPosLine.setObjectName(_fromUtf8("XPosLine"))
@@ -146,49 +120,43 @@ class Ui_PoseDialog(object):
         
         self.YPosLine = QtWidgets.QLineEdit(self.frame)
         self.YPosLine.setObjectName(_fromUtf8("YPosLine"))
-        self.parametersGridLayout.addWidget(self.YPosLine, 1, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.YPosLine, 0, 5, 1, 1)
         
         self.ZPosLine = QtWidgets.QLineEdit(self.frame)
         self.ZPosLine.setObjectName(_fromUtf8("ZPosLine"))
-        self.parametersGridLayout.addWidget(self.ZPosLine, 2, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.ZPosLine, 0, 6, 1, 1)
         
         self.tiltLine = QtWidgets.QLineEdit(self.frame)
         self.tiltLine.setObjectName(_fromUtf8("tiltLine"))
-        self.parametersGridLayout.addWidget(self.tiltLine, 3, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.tiltLine, 1, 4, 1, 1)
         
         self.headingLine = QtWidgets.QLineEdit(self.frame)
         self.headingLine.setObjectName(_fromUtf8("headingLine"))
-        self.parametersGridLayout.addWidget(self.headingLine, 4, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.headingLine, 2, 4, 1, 1)
         
         self.swingLine = QtWidgets.QLineEdit(self.frame)
         self.swingLine.setObjectName(_fromUtf8("swingLine"))
-        self.parametersGridLayout.addWidget(self.swingLine, 5, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.swingLine, 3, 4, 1, 1)
         
         self.focalLine = QtWidgets.QLineEdit(self.frame)
         self.focalLine.setObjectName(_fromUtf8("focalLine"))
-        self.parametersGridLayout.addWidget(self.focalLine, 6, 4, 1, 1)
+        self.parametersGridLayout.addWidget(self.focalLine, 4, 4, 1, 1)
 
-        self.XPosLabel = QtWidgets.QLabel(self.frame)
-        self.XPosLabel.setObjectName(_fromUtf8("XPosLabel"))
-        self.parametersGridLayout.addWidget(self.XPosLabel, 0, 0, 1, 1)
-        self.YPosLabel = QtWidgets.QLabel(self.frame)
-        self.YPosLabel.setObjectName(_fromUtf8("YPosLabel"))
-        self.parametersGridLayout.addWidget(self.YPosLabel, 1, 0, 1, 1)
-        self.ZPosLabel = QtWidgets.QLabel(self.frame)
-        self.ZPosLabel.setObjectName(_fromUtf8("ZPosLabel"))
-        self.parametersGridLayout.addWidget(self.ZPosLabel, 2, 0, 1, 1)
+        self.XYZPosLabel = QtWidgets.QLabel(self.frame)
+        self.XYZPosLabel.setObjectName(_fromUtf8("XPosLabel"))
+        self.parametersGridLayout.addWidget(self.XYZPosLabel, 0, 0, 1, 1)
         self.tiltLabel = QtWidgets.QLabel(self.frame)
         self.tiltLabel.setObjectName(_fromUtf8("tiltLabel"))
-        self.parametersGridLayout.addWidget(self.tiltLabel, 3, 0, 1, 1)
+        self.parametersGridLayout.addWidget(self.tiltLabel, 1, 0, 1, 1)
         self.headingLabel = QtWidgets.QLabel(self.frame)
         self.headingLabel.setObjectName(_fromUtf8("headingLabel"))
-        self.parametersGridLayout.addWidget(self.headingLabel, 4, 0, 1, 1)
+        self.parametersGridLayout.addWidget(self.headingLabel, 2, 0, 1, 1)
         self.swingLabel = QtWidgets.QLabel(self.frame)
         self.swingLabel.setObjectName(_fromUtf8("swingLabel"))
-        self.parametersGridLayout.addWidget(self.swingLabel, 5, 0, 1, 1)
+        self.parametersGridLayout.addWidget(self.swingLabel, 3, 0, 1, 1)
         self.focalLabel = QtWidgets.QLabel(self.frame)
         self.focalLabel.setObjectName(_fromUtf8("focalLabel"))
-        self.parametersGridLayout.addWidget(self.focalLabel, 6, 0, 1, 1)
+        self.parametersGridLayout.addWidget(self.focalLabel, 4, 0, 1, 1)
    
         self.mainGridLayout.addWidget(self.frame, 1, 1, 1, 4)
 
@@ -204,9 +172,7 @@ class Ui_PoseDialog(object):
         self.importParamButton.setObjectName(_fromUtf8("importParamButton"))
         self.mainGridLayout.addWidget(self.importParamButton, 2, 1, 1, 1)
 
-        self.XPosFree.setChecked(True)
-        self.YPosFree.setChecked(True)
-        self.ZPosFree.setChecked(True)
+        self.XYZPosFree.setChecked(True)
         self.tiltFree.setChecked(True)
         self.headingFree.setChecked(True)
         self.swingFree.setChecked(True)
@@ -228,45 +194,37 @@ class Ui_PoseDialog(object):
         QtCore.QMetaObject.connectSlotsByName(PoseDialog)
         
         self.XPosLine.setReadOnly(True)
-        self.XPosFixed.toggled.connect(self.XPosFixedclicked)
-        self.XPosFree.toggled.connect(self.XPosFreeclicked)
-        self.XPosIni.toggled.connect(self.XPosIniclicked)
-        self.XPosLine.textEdited.connect(self.lineEditEdited)
-        
         self.YPosLine.setReadOnly(True)
-        self.YPosFixed.toggled.connect(self.YPosFixedclicked)
-        self.YPosFree.toggled.connect(self.YPosFreeclicked)
-        self.YPosIni.toggled.connect(self.YPosIniclicked)
-        self.YPosLine.textEdited.connect(self.lineEditEdited)
-        
         self.ZPosLine.setReadOnly(True)
-        self.ZPosFixed.toggled.connect(self.ZPosFixedclicked)
-        self.ZPosFree.toggled.connect(self.ZPosFreeclicked)
-        self.ZPosIni.toggled.connect(self.ZPosIniclicked)
+        self.XYZPosFixed.toggled.connect(self.XYZPosFixedclicked)
+        self.XYZPosFree.toggled.connect(self.XYZPosFreeclicked)
+        self.XYZPosIni.toggled.connect(self.XYZPosIniclicked)
+        self.XPosLine.textEdited.connect(self.lineEditEdited)
+        self.YPosLine.textEdited.connect(self.lineEditEdited)
         self.ZPosLine.textEdited.connect(self.lineEditEdited)
         
         self.headingLine.setReadOnly(True)
-        self.headingFixed.toggled.connect(self.headingFixedclicked)
         self.headingFree.toggled.connect(self.headingFreeclicked)
         self.headingIni.toggled.connect(self.headingIniclicked)
+        self.headingFixed.toggled.connect(self.headingFixedclicked)
         self.headingLine.textEdited.connect(self.lineEditEdited)
         
         self.tiltLine.setReadOnly(True)
-        self.tiltFixed.toggled.connect(self.tiltFixedclicked)
         self.tiltFree.toggled.connect(self.tiltFreeclicked)
         self.tiltIni.toggled.connect(self.tiltIniclicked)
+        self.tiltFixed.toggled.connect(self.tiltFixedclicked)
         self.tiltLine.textEdited.connect(self.lineEditEdited)
         
         self.swingLine.setReadOnly(True)
-        self.swingFixed.toggled.connect(self.swingFixedclicked)
         self.swingFree.toggled.connect(self.swingFreeclicked)
         self.swingIni.toggled.connect(self.swingIniclicked)
+        self.swingFixed.toggled.connect(self.swingFixedclicked)
         self.swingLine.textEdited.connect(self.lineEditEdited)
         
         self.focalLine.setReadOnly(True)
-        self.focalFixed.toggled.connect(self.focalFixedclicked)
         self.focalFree.toggled.connect(self.focalFreeclicked)
         self.focalIni.toggled.connect(self.focalIniclicked)
+        self.focalFixed.toggled.connect(self.focalFixedclicked)
         self.focalLine.textEdited.connect(self.lineEditEdited)
 
     def hide_layout(self, layout):
@@ -276,141 +234,103 @@ class Ui_PoseDialog(object):
                 widget.hide()  # Hide each widget in the layout
 
     def lineEditEdited(self):
-        self.needRefresh.emit() 
-    
-    def focalFixedclicked(self):
-        if self.focalFixed.isChecked():
-            self.focalLine.setReadOnly(False)
-            self.needRefresh.emit()  
+        self.needRefresh.emit()  
     def focalFreeclicked(self):
         if self.focalFree.isChecked():
-            #self.focalLine.setText('')
             self.focalLine.setReadOnly(True)
             self.needRefresh.emit()
     def focalIniclicked(self):
         if self.focalIni.isChecked():
             self.focalLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-    def swingFixedclicked(self):
-        if self.swingFixed.isChecked():
-            self.swingLine.setReadOnly(False) 
-            self.needRefresh.emit()
+    def focalFixedclicked(self):
+        if self.focalFixed.isChecked():
+            self.focalLine.setReadOnly(False)
+            self.needRefresh.emit() 
+
     def swingFreeclicked(self):
         if self.swingFree.isChecked():
-            #self.swingLine.setText('')
             self.swingLine.setReadOnly(True)
             self.needRefresh.emit()
     def swingIniclicked(self):
         if self.swingIni.isChecked():
             self.swingLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-    def tiltFixedclicked(self):
-        if self.tiltFixed.isChecked():
-            self.tiltLine.setReadOnly(False)
-            self.needRefresh.emit() 
+    def swingFixedclicked(self):
+        if self.swingFixed.isChecked():
+            self.swingLine.setReadOnly(False)
+            self.needRefresh.emit()
+
     def tiltFreeclicked(self):
         if self.tiltFree.isChecked():
-            #self.tiltLine.setText('')
             self.tiltLine.setReadOnly(True)
             self.needRefresh.emit()
     def tiltIniclicked(self):
         if self.tiltIni.isChecked():
             self.tiltLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-    def headingFixedclicked(self):
-        if self.headingFixed.isChecked():
-            self.headingLine.setReadOnly(False)
-            self.needRefresh.emit() 
+    def tiltFixedclicked(self):
+        if self.tiltFixed.isChecked():
+            self.tiltLine.setReadOnly(False)
+            self.needRefresh.emit()
+
     def headingFreeclicked(self):
         if self.headingFree.isChecked():
-            #self.headingLine.setText('')
             self.headingLine.setReadOnly(True)
             self.needRefresh.emit()
     def headingIniclicked(self):
         if self.headingIni.isChecked():
             self.headingLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-    def ZPosFixedclicked(self):
-        if self.ZPosFixed.isChecked():
-            self.ZPosLine.setReadOnly(False)
-            self.needRefresh.emit() 
-    def ZPosFreeclicked(self):
-        if self.ZPosFree.isChecked():
-            #self.ZPosLine.setText('')
+    def headingFixedclicked(self):
+        if self.headingFixed.isChecked():
+            self.headingLine.setReadOnly(False)
+            self.needRefresh.emit()
+
+    def XYZPosFreeclicked(self):
+        if self.XYZPosFree.isChecked():
+            self.XPosLine.setReadOnly(True)
+            self.YPosLine.setReadOnly(True)
             self.ZPosLine.setReadOnly(True)
             self.needRefresh.emit()
-    def ZPosIniclicked(self):
-        if self.ZPosIni.isChecked():
+    def XYZPosIniclicked(self):
+        if self.XYZPosIni.isChecked():
+            self.XPosLine.setReadOnly(False)
+            self.YPosLine.setReadOnly(False)
             self.ZPosLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-    def YPosFixedclicked(self):
-        if self.YPosFixed.isChecked():
-            self.YPosLine.setReadOnly(False)
-            self.needRefresh.emit() 
-    def YPosFreeclicked(self):
-        if self.YPosFree.isChecked():
-            #self.YPosLine.setText('')
-            self.YPosLine.setReadOnly(True)
-            self.needRefresh.emit()
-    def YPosIniclicked(self):
-        if self.YPosIni.isChecked():
-            self.YPosLine.setReadOnly(False)
-            self.needRefresh.emit()
-            
-    def XPosFixedclicked(self):
-        if self.XPosFixed.isChecked():
+    def XYZPosFixedclicked(self):
+        if self.XYZPosFixed.isChecked():
             self.XPosLine.setReadOnly(False)
-            self.needRefresh.emit()
-    def XPosFreeclicked(self):
-        if self.XPosFree.isChecked():
-            #self.XPosLine.setText('')
-            self.XPosLine.setReadOnly(True)
-            self.needRefresh.emit()
-    def XPosIniclicked(self):
-        if self.XPosIni.isChecked():
-            self.XPosLine.setReadOnly(False)
+            self.YPosLine.setReadOnly(False)
+            self.ZPosLine.setReadOnly(False)
             self.needRefresh.emit()
             
             
     def retranslateUi(self, PoseDialog):
         PoseDialog.setWindowTitle(_translate("PoseDialog", "Pose estimation", None))
         
-        self.XPosFree.setText(_translate("PoseDialog", "Free", None))
-        self.XPosFixed.setText(_translate("PoseDialog", "Fixed", None))
-        self.XPosIni.setText(_translate("PoseDialog", "Apriori", None))
-        
-        self.YPosFree.setText(_translate("PoseDialog", "Free", None))
-        self.YPosFixed.setText(_translate("PoseDialog", "Fixed", None))
-        self.YPosIni.setText(_translate("PoseDialog", "Apriori", None))
-        
-        self.ZPosFree.setText(_translate("PoseDialog", "Free", None))
-        self.ZPosFixed.setText(_translate("PoseDialog", "Fixed", None))
-        self.ZPosIni.setText(_translate("PoseDialog", "Apriori", None))
+        self.XYZPosFree.setText(_translate("PoseDialog", "Free", None))
+        self.XYZPosFixed.setText(_translate("PoseDialog", "Fixed", None))
+        self.XYZPosIni.setText(_translate("PoseDialog", "Apriori", None))
         
         self.tiltFree.setText(_translate("PoseDialog", "Free", None))
-        self.tiltFixed.setText(_translate("PoseDialog", "Fixed", None))
         self.tiltIni.setText(_translate("PoseDialog", "Apriori", None))
+        self.tiltFixed.setText(_translate("PoseDialog", "Fixed", None))
         
         self.headingFree.setText(_translate("PoseDialog", "Free", None))
-        self.headingFixed.setText(_translate("PoseDialog", "Fixed", None))
         self.headingIni.setText(_translate("PoseDialog", "Apriori", None))
+        self.headingFixed.setText(_translate("PoseDialog", "Fixed", None))
         
         self.swingFree.setText(_translate("PoseDialog", "Free", None))
-        self.swingFixed.setText(_translate("PoseDialog", "Fixed", None))
         self.swingIni.setText(_translate("PoseDialog", "Apriori", None))
+        self.swingFixed.setText(_translate("PoseDialog", "Fixed", None))
         
         self.focalFree.setText(_translate("PoseDialog", "Free", None))
-        self.focalFixed.setText(_translate("PoseDialog", "Fixed", None))
         self.focalIni.setText(_translate("PoseDialog", "Apriori", None))
+        self.focalFixed.setText(_translate("PoseDialog", "Fixed", None))
 
-        self.XPosLabel.setText(_translate("PoseDialog", "X Position [m]", None))
-        self.YPosLabel.setText(_translate("PoseDialog", "Y Position [m]", None))
-        self.ZPosLabel.setText(_translate("PoseDialog", "Z Position [m]", None))
+        self.XYZPosLabel.setText(_translate("PoseDialog", "XYZ Position [m]", None))
         self.tiltLabel.setText(_translate("PoseDialog", "tilt [°]", None))
         self.headingLabel.setText(_translate("PoseDialog", "heading [°]", None))
         self.swingLabel.setText(_translate("PoseDialog", "swing [°]", None))
