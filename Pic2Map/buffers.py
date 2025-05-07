@@ -13,7 +13,7 @@ from __future__ import print_function
 from builtins import map
 from builtins import range
 from past.utils import old_div
-from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *

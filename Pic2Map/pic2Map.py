@@ -10,26 +10,20 @@
 """
 from __future__ import division
 from __future__ import absolute_import
-from builtins import str
 from builtins import object
 from past.utils import old_div
-import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt6 import QtGui, QtWidgets, QtCore
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
 from .buffers import Buffers
 from .getGCPMainWindow import GetGCPMainWindow
 from .initialization import Initialization_dialog
-from .virtual3DMainWindow import Virtual3DMainWindow
 from .monoplotterMainWindow import MonoplotterMainWindow
 from .drapping import drappingMain
-from .ortho import viewOrtho_class
 from .checkOpenGLVersion import CheckVersion
 s = QSettings()
-import sys, os
 from PIL import Image
 # initialize Qt resources from file resouces.py
 from . import resources
