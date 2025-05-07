@@ -20,3 +20,4 @@ tags=picture, perspective, pose estimation, orientation, orthorectification, mon
 icon=icon.png
 experimental=True
 deprecated=False
+supportsQt6=True
