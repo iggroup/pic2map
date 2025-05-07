@@ -413,19 +413,9 @@ class GetGCPMainWindow(QMainWindow):
                 if not isinstance(pos[i], (int, float)):
                    QMessageBox.warning(self, "Value - Error","Failed to load current point" )
                    return
-
-            matrix = QTransform()
-            zoomFactorOnCross = old_div(QGuiApplication.primaryScreen().geometry().height(),(10.0*(self.sizePicture[0]/80.0)))
-            matrix.scale(zoomFactorOnCross, zoomFactorOnCross)
-            self.ui.graphicsView.setTransform(matrix)
-            hOffset = old_div(self.ui.graphicsView.size().width(),(2.0*zoomFactorOnCross))
-            vOffset = old_div(self.ui.graphicsView.size().height(),(2.0*zoomFactorOnCross))
-            hValue = int((pos[0]-hOffset)*matrix.m11())
-            vValue = int((pos[1]-vOffset)*matrix.m22())
-            self.ui.graphicsView.horizontalScrollBar().setValue(hValue)
-            self.ui.graphicsView.verticalScrollBar().setValue(vValue)
-            self.countZoom = 13
-            self.resizeCross(1.21, True)
+            for i in range(self.countZoom, 13):
+                self.resizeCross(1.21)
+            self.ui.graphicsView.centerOn(pos[0], pos[1])
             self.setCanvasExtentSignal.emit((pos[2],pos[3]))
             self.ui.statusbar.showMessage('View zoomed on selected GCP')
         
@@ -671,26 +661,23 @@ class GetGCPMainWindow(QMainWindow):
         self.ui.graphicsView.setDragMode(QGraphicsView.DragMode.NoDrag)    
         
  
-    def resizeCross(self, factor, zoomOnGCP=False):
+    def resizeCross(self, factor):
         #redraw the crosses on the picture with a size matching the zoom
         ZoomInFactor = 1.1874
         ZoomOutFactor = 0.8421
-        if factor > 1  and self.countZoom < 25 and zoomOnGCP == False :
+        if factor > 1  and self.countZoom < 25:
             self.countZoom += 1
             self.ui.graphicsView.scale(ZoomInFactor, ZoomInFactor)
             self.iconSet.SM = self.iconSet.SM * ZoomOutFactor
             self.iconSet.WM = self.iconSet.WM * ZoomOutFactor
 
-        elif factor < 1 and self.countZoom > -2 and zoomOnGCP == False :
+        elif factor < 1 and self.countZoom > -2:
             self.countZoom -= 1
             self.ui.graphicsView.scale(ZoomOutFactor, ZoomOutFactor)
             self.iconSet.SM = self.iconSet.SM * ZoomInFactor
             self.iconSet.WM = self.iconSet.WM * ZoomInFactor
-        
-        #self.iconSet.SM = int((-2.8148*self.countZoom) + 74.37)
-        #self.iconSet.WM = int((-0.6666*self.countZoom) + 18.66)    
+
         self.refreshPictureGCP()
-        
 
 
     def selectCanvasPoint(self, point):
