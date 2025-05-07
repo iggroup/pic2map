@@ -24,10 +24,10 @@ from PyQt6 import QtWidgets
 from PyQt6.QtGui import *
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
-from .ui.ui_pose import Ui_Pose
+from .ui.ui_pose import Ui_PoseDialog
 from PIL import Image
 import piexif
-from numpy import zeros, array, sin, cos, dot, linalg, pi, mean, std, min, max, sqrt, std, arcsin, arctan, abs
+from numpy import zeros, array, sin, cos, dot, linalg, pi, mean, std, min, max, std, arcsin, arctan, abs
 from .reportDialog import ReportDialog
 from .exifInfo import ExifInfo
 from osgeo import ogr, osr
@@ -44,8 +44,8 @@ class Pose_dialog(QtWidgets.QDialog):
     def __init__(self, gcp_table_model: GCPTableModel, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
         #QtGui.QDialog.__init__(self)
         QtWidgets.QDialog.__init__(self)
-        self.uiPose = Ui_Pose()
-        self.uiPose.setupUi(self)
+        self.uiPoseDialog = Ui_PoseDialog()
+        self.uiPoseDialog.setupUi(self)
         #self.center()
         self.done = False
         self.sizePicture = sizePicture
@@ -58,12 +58,12 @@ class Pose_dialog(QtWidgets.QDialog):
         self.iface = iface
         self.crs = crs
         self.result = paramPosIni
-        self.uiPose.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
-        self.uiPose.reportButton.clicked.connect(self.showReportOnGCP)
-        self.uiPose.importParamButton.clicked.connect(self.importPositionCamera)
-        self.uiPose.cameraPositionButton.clicked.connect(self.savePositionCamera)
-        self.uiPose.exifButton.clicked.connect(self.exifInfoDisp)
-        self.uiPose.needRefresh.connect(self.refreshButton)
+        self.uiPoseDialog.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
+        self.uiPoseDialog.reportButton.clicked.connect(self.showReportOnGCP)
+        self.uiPoseDialog.importParamButton.clicked.connect(self.importPositionCamera)
+        self.uiPoseDialog.cameraPositionButton.clicked.connect(self.savePositionCamera)
+        self.uiPoseDialog.exifButton.clicked.connect(self.exifInfoDisp)
+        self.uiPoseDialog.needRefresh.connect(self.refreshButton)
         self.buttonColor = "R"
         self.actionOnButton("C", self.buttonColor)
         
@@ -128,17 +128,17 @@ class Pose_dialog(QtWidgets.QDialog):
     def importXYButtonPress(self):
         for item in self.exifInfo.transformCoord : 
             if item[1] == "pos" :
-                self.uiPose.XPosLine.setText(str(round(item[0][0],3)))
-                self.uiPose.XPosIni.setChecked(True)
-                self.uiPose.YPosLine.setText(str(round(item[0][1],3)))
-                self.uiPose.YPosIni.setChecked(True)
+                self.uiPoseDialog.XPosLine.setText(str(round(item[0][0],3)))
+                self.uiPoseDialog.XPosIni.setChecked(True)
+                self.uiPoseDialog.YPosLine.setText(str(round(item[0][1],3)))
+                self.uiPoseDialog.YPosIni.setChecked(True)
             elif item[1] == "alt" :
-                self.uiPose.ZPosLine.setText(str(round(item[0],3)))
-                self.uiPose.ZPosIni.setChecked(True)
+                self.uiPoseDialog.ZPosLine.setText(str(round(item[0],3)))
+                self.uiPoseDialog.ZPosIni.setChecked(True)
 
             elif item [1] == "heading" :
-                self.uiPose.headingLine.setText(str(round(item[0],3)))
-                self.uiPose.headingIni.setChecked(True)
+                self.uiPoseDialog.headingLine.setText(str(round(item[0],3)))
+                self.uiPoseDialog.headingIni.setChecked(True)
         
         self.refreshButton()
     
@@ -191,8 +191,8 @@ class Pose_dialog(QtWidgets.QDialog):
         self.exifInfo.setTextBrowser()
 
     def fixFocal(self, focalPixel):
-        self.uiPose.focalLine.setText(str(focalPixel))
-        self.uiPose.focalIni.setChecked(True)
+        self.uiPoseDialog.focalLine.setText(str(focalPixel))
+        self.uiPoseDialog.focalIni.setChecked(True)
         #self.uiPose.focalIni.toggle()
 
     def estimatePose(self, smapshot_georeferencer=False):
@@ -463,22 +463,22 @@ class Pose_dialog(QtWidgets.QDialog):
 
     def actionOnButton(self, action, arg=None):
         if action == "E" :
-            self.uiPose.cameraPositionButton.setEnabled(arg)
-            self.uiPose.reportButton.setEnabled(arg)
+            self.uiPoseDialog.cameraPositionButton.setEnabled(arg)
+            self.uiPoseDialog.reportButton.setEnabled(arg)
         
         elif action == "C" :
             self.buttonColor = arg
             if arg == "R": 
-                self.uiPose.cameraPositionButton.setStyleSheet("background-color: rgb(255, 90, 90);")
-                self.uiPose.reportButton.setStyleSheet("background-color: rgb(255, 90, 90);")
+                self.uiPoseDialog.cameraPositionButton.setStyleSheet("background-color: rgb(255, 90, 90);")
+                self.uiPoseDialog.reportButton.setStyleSheet("background-color: rgb(255, 90, 90);")
 
             elif arg == "Y" :
-                self.uiPose.cameraPositionButton.setStyleSheet("background-color: rgb(255, 255, 90);")
-                self.uiPose.reportButton.setStyleSheet("background-color: rgb(255, 255, 90);")
+                self.uiPoseDialog.cameraPositionButton.setStyleSheet("background-color: rgb(255, 255, 90);")
+                self.uiPoseDialog.reportButton.setStyleSheet("background-color: rgb(255, 255, 90);")
 
             elif arg == "G" :
-                self.uiPose.cameraPositionButton.setStyleSheet("background-color: rgb(90, 255, 90);")
-                self.uiPose.reportButton.setStyleSheet("background-color: rgb(90, 255, 90);")
+                self.uiPoseDialog.cameraPositionButton.setStyleSheet("background-color: rgb(90, 255, 90);")
+                self.uiPoseDialog.reportButton.setStyleSheet("background-color: rgb(90, 255, 90);")
 
     def importPositionCamera(self):
         
