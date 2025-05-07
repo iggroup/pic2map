@@ -93,4 +93,4 @@ if __name__ == "__main__":
     ui = Ui_Exif2()
     ui.setupUi(Exif2)
     Exif2.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

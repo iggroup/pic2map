@@ -513,7 +513,7 @@ class GetGCPMainWindow(QMainWindow):
             self.poseDialogue.actionOnButton("E", True)
             self.poseDialogue.actionOnButton("C", "G")
         self.poseDialogue.show()
-        #result = self.poseDialogue.exec_()
+        #result = self.poseDialogue.exec()
         
     def updatePose(self):
         try:
@@ -613,7 +613,7 @@ class GetGCPMainWindow(QMainWindow):
         self.iconDia = icons_dialog(self.iconSet)
         self.iconDia.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.iconDia.show()
-        result = self.iconDia.exec_()
+        result = self.iconDia.exec()
         if result == 1:
             self.iconSet.SM = self.iconDia.uiIcons.spinBoxSM.value()
             self.iconSet.WM = self.iconDia.uiIcons.spinBoxWM.value()
@@ -816,7 +816,7 @@ class GetGCPMainWindow(QMainWindow):
             ButtonDiscard.setText("Replace")
             ButtonSave = QuestionBox.button(QMessageBox.StandardButton.Save)
             ButtonSave.setText("Keep")
-            ret = QuestionBox.exec_()
+            ret = QuestionBox.exec()
             if ret == QMessageBox.StandardButton.Discard :
                 discard = True
             elif ret == QMessageBox.StandardButton.Cancel :

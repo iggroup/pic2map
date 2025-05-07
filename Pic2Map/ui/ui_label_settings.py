@@ -75,4 +75,4 @@ if __name__ == "__main__":
     ui = Ui_LabelSetting()
     ui.setupUi(LabelSetting)
     LabelSetting.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

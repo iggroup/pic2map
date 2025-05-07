@@ -108,4 +108,4 @@ if __name__ == "__main__":
     ui = Ui_drapping()
     ui.setupUi(Ui_drapping)
     Ui_drapping.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

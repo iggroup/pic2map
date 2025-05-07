@@ -134,4 +134,4 @@ if __name__ == "__main__":
     ui = Ui_D3()
     ui.setupUi(Ui_D3)
     Ui_D3.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

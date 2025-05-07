@@ -445,5 +445,5 @@ if __name__ == "__main__":
     ui = Ui_PoseDialog()
     ui.setupUi(PoseDialog)
     PoseDialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

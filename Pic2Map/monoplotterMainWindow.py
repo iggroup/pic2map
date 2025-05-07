@@ -736,7 +736,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         self.labelSettingWindow = label_dialog(self.labelSetting)
         self.labelSettingWindow.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.labelSettingWindow.show()
-        result = self.labelSettingWindow.exec_()
+        result = self.labelSettingWindow.exec()
         if result == 1:
             self.labelSetting[0] = self.labelSettingWindow.ui.colorButton.palette().color(1)
             self.labelSetting[1] = self.labelSettingWindow.font

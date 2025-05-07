@@ -62,4 +62,4 @@ if __name__ == "__main__":
     ui = Ui_Mesure3DDialog()
     ui.setupUi(Mesure3DDialog)
     Mesure3DDialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

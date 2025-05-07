@@ -109,4 +109,4 @@ if __name__ == "__main__":
     ui = Ui_iconsDialog()
     ui.setupUi(iconsDialog)
     iconsDialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

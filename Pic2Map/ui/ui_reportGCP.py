@@ -41,4 +41,4 @@ if __name__ == "__main__":
     ui = Ui_ReportGCP()
     ui.setupUi(ReportGCP)
     ReportGCP.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
