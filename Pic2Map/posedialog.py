@@ -58,7 +58,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.iface = iface
         self.crs = crs
         self.result = paramPosIni
-        self.uiPoseDialog.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshot_georeferencer=True))
+        self.uiPoseDialog.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshotGeoreferencer=True))
         self.uiPoseDialog.reportButton.clicked.connect(self.showReportOnGCP)
         self.uiPoseDialog.importParamButton.clicked.connect(self.importPositionCamera)
         self.uiPoseDialog.cameraPositionButton.clicked.connect(self.savePositionCamera)
@@ -97,7 +97,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.move(qr.topLeft())
     
     def reportOnGCPs(self):
-        self.report = ReportDialog(self.gcp_table_model, self.parameter_bool, self.result, self.pathToData, self.xyzUnProjected, self.error_report)
+        self.report = ReportDialog(self.gcp_table_model, self.parameterBool, self.result, self.pathToData, self.xyzUnProjected, self.errorReport)
         
     def showReportOnGCP(self):
         if hasattr(self, 'report'):
@@ -194,8 +194,8 @@ class Pose_dialog(QtWidgets.QDialog):
         self.uiPoseDialog.focalIni.setChecked(True)
         #self.uiPose.focalIni.toggle()
 
-    def estimatePose(self, smapshot_georeferencer=False):
-        
+    def estimatePose(self, smapshotGeoreferencer=False):
+
         # Function called when the user press "Estimate Pose"
         """
         Read the model (table) and get all the values from the 5th first columns
@@ -207,105 +207,86 @@ class Pose_dialog(QtWidgets.QDialog):
         Column 1 and 2 are seen has observationservations.
         Columns 3,4,5 form the ordinate on which the observationservation in done.
         """
-        gcp_table_model: GCPTableModel = self.gcp_table_model
-        total_gcps: int = gcp_table_model.rowCount()
-        total_enabled_gcps = 0
-        for row_idx in range(0, total_gcps):
-            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 1:
-                total_enabled_gcps += 1
+        gcpTableModel: GCPTableModel = self.gcp_table_model
+        totalGcps: int = gcpTableModel.rowCount()
+        totalEnabledGcps = 0
+        for rowIdx in range(0, totalGcps):
+            if gcpTableModel.data(gcpTableModel.index(rowIdx,5)) == 1:
+                totalEnabledGcps += 1
 
-        gcp_xyz_array = zeros((total_enabled_gcps, 3))
-        gcp_uv_array = zeros((total_enabled_gcps,2))
-        gcp_idx = 0
-        for row_idx in range(0, total_gcps):
-            if gcp_table_model.checkValid(row_idx)==0:
+        gcpXYZArray = zeros((totalEnabledGcps, 3))
+        gcpUVArray = zeros((totalEnabledGcps,2))
+        gcpIdx = 0
+        for rowIdx in range(0, totalGcps):
+            if gcpTableModel.checkValid(rowIdx)==0:
                 continue
-            if gcp_table_model.data(gcp_table_model.index(row_idx,5)) == 0:
+            if gcpTableModel.data(gcpTableModel.index(rowIdx,5)) == 0:
                 continue
-            index = gcp_table_model.index(row_idx, 0)
-            gcp_uv_array[gcp_idx,0] = gcp_table_model.data(index)
-            index = gcp_table_model.index(row_idx,1)
-            gcp_uv_array[gcp_idx,1] = gcp_table_model.data(index)
-            index = gcp_table_model.index(row_idx,2)
-            gcp_xyz_array[gcp_idx,0] = gcp_table_model.data(index)
-            index = gcp_table_model.index(row_idx,3)
-            gcp_xyz_array[gcp_idx,1] = gcp_table_model.data(index)
-            index = gcp_table_model.index(row_idx,4)
-            gcp_xyz_array[gcp_idx,2] = gcp_table_model.data(index)
-            gcp_idx +=1
+            index = gcpTableModel.index(rowIdx, 0)
+            gcpUVArray[gcpIdx,0] = gcpTableModel.data(index)
+            index = gcpTableModel.index(rowIdx,1)
+            gcpUVArray[gcpIdx,1] = gcpTableModel.data(index)
+            index = gcpTableModel.index(rowIdx,2)
+            gcpXYZArray[gcpIdx,0] = gcpTableModel.data(index)
+            index = gcpTableModel.index(rowIdx,3)
+            gcpXYZArray[gcpIdx,1] = gcpTableModel.data(index)
+            index = gcpTableModel.index(rowIdx,4)
+            gcpXYZArray[gcpIdx,2] = gcpTableModel.data(index)
+            gcpIdx +=1
 
         # self.gcp_xyz_used are GCP which have 6th column enabled 
-        self.gcp_xyz_used = array([-1*gcp_xyz_array[:,0],gcp_xyz_array[:,1],gcp_xyz_array[:,2]]).T
+        self.gcpXYZUsed = array([-1*gcpXYZArray[:,0],gcpXYZArray[:,1],gcpXYZArray[:,2]]).T
         
-        table = self.findChildren(QtWidgets.QLineEdit)
-        parameter_bool = zeros((9))
-        parameter_list = []
-        parameter_idx = 0
+        lineEdits = self.findChildren(QtWidgets.QLineEdit)
+        parameterTypeList = []
+        parameterValueList = []
+        parameterIdx = 0
         """
         Read the list of Parameter of camera
         0. X Position 
         1. Y Position
         2. Z Position
-        3. Tilt
+        3. tilt
         4. heading
         5. swing
         6. focal
         Parameters 7 and 8 are the central point. It is fixed to the center of image for convenience with openGL
         parameter_bool is an array with 0 if the parameter is fixed, or 1 if the parameter is free
         """
-        
         #For each radio button (Free, Fixed, Apriori) for each parameters
         for radioButton in self.findChildren(QtWidgets.QRadioButton):
+            if radioButton.isChecked():
+                isXYZPose = parameterIdx == 0
+                parametersToProcess = 3 if isXYZPose else 1
 
-            if (radioButton.text() == "Free"):
-                if radioButton.isChecked():
-
-                    parameter_bool[parameter_idx] = int(1) # The parameters is free
-                    parameter_list.append(0)
-                     
-            elif (radioButton.text() == "Fixed"):
-                if radioButton.isChecked():
-
-                    parameter_bool[parameter_idx] = int(0) #The parameters is fixed
-
-                    value = float(table[parameter_idx].text())
-                    if parameter_idx == 0:
-                        value = -value
-                    if parameter_idx > 2 and parameter_idx < 6:
-                        value *=  old_div(pi,180)  #angle are displayed in degree
-                    if parameter_idx == 7:
-                        value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if parameter_idx == 8:
-                        value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
-                    parameter_list.append(value)
-                    
-            elif (radioButton.text() == "Apriori"): #Apriori
-                
-                if radioButton.isChecked():
-
-                    parameter_bool[parameter_idx] = int(2) #The parameters is aprior
-
-                    value = float(table[parameter_idx].text())
-                    if parameter_idx == 0:
-                        value = -value
-                    if parameter_idx > 2 and parameter_idx < 6:
-                        value *=  old_div(pi,180)  #angle are displayed in degree
-                    if parameter_idx == 7:
-                        value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                    if parameter_idx == 8:
-                        value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
-                    parameter_list.append(value)
-                
-                #Incrementation of the indice of the parameters (each 3 button)
-                parameter_idx += 1
+                for i in range(parametersToProcess):
+                    if (radioButton.text() == "Free"):
+                        parameterTypeList.append(0) # The parameters is free
+                        parameterValueList.append(0)
+                    else:
+                            if (radioButton.text() == "Apriori"): #Apriori
+                                parameterTypeList.append(1) #The parameters is aprior
+                            elif (radioButton.text() == "Fixed"): #Fixed
+                                parameterTypeList.append(2) #The parameters is fixed
+                            value = float(lineEdits[parameterIdx].text())
+                            # if parameterIdx == 0:
+                            #     value = -value
+                            if parameterIdx > 2 and parameterIdx < 6:
+                                value *=  old_div(pi,180) #angle are displayed in degree
+                            if parameterIdx == 7:
+                                value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
+                            if parameterIdx == 8:
+                                value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
+                            parameterValueList.append(value)
+                    parameterIdx += 1
 
         # We fix anyway the central point. Future work can take it into account. It is therefore used here as parameter.
         #U0
-        parameter_bool[7] = 0
-        parameter_list.append(old_div(self.sizePicture[0],2))
+        parameterTypeList.append(0)
+        parameterValueList.append(old_div(self.sizePicture[0],2))
         #V0
-        parameter_bool[8] = 0
-        parameter_list.append(old_div(self.sizePicture[1],2))
+        parameterTypeList.append(0)
+        parameterValueList.append(old_div(self.sizePicture[1],2))
 
 
         ##########################
@@ -313,65 +294,90 @@ class Pose_dialog(QtWidgets.QDialog):
         ##########################
 
         # Convert gcp location from the current Crs to EPSG:4326
-        source_crs = QgsProject.instance().crs()
-        target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
-        transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
-        reverse_transform = QgsCoordinateTransform(target_crs, source_crs, QgsProject.instance())
-        gcp_smapshot_list = []
-        for gcp_idx in range(total_enabled_gcps):
-            x, y, z = gcp_xyz_array[gcp_idx]
-            point_xy = QgsPointXY(x, y)
-            point_lnglat = transform.transform(point_xy)
-            gcp_smapshot_list.append({
-                "longitude": point_lnglat.x(),
-                "latitude": point_lnglat.y(),
+        sourceCrs = QgsProject.instance().crs()
+        targetCrs = QgsCoordinateReferenceSystem("EPSG:4326")
+        transform = QgsCoordinateTransform(sourceCrs, targetCrs, QgsProject.instance())
+        reverseTransform = QgsCoordinateTransform(targetCrs, sourceCrs, QgsProject.instance())
+        gcpSmapshotList = []
+        for gcpIdx in range(totalEnabledGcps):
+            x, y, z = gcpXYZArray[gcpIdx]
+            pointXY = QgsPointXY(x, y)
+            pointLngLat = transform.transform(pointXY)
+            gcpSmapshotList.append({
+                "longitude": pointLngLat.x(),
+                "latitude": pointLngLat.y(),
                 "altitude": z,
-                "x": gcp_uv_array[gcp_idx, 0],
-                "y": gcp_uv_array[gcp_idx, 1]
+                "x": gcpUVArray[gcpIdx, 0],
+                "y": gcpUVArray[gcpIdx, 1]
             })
 
         # Initial data (free)
-        lng0 = 0
-        lat0 = 0
-        alt0 = 0
-        azimuthDeg = 0
-        tiltDeg = 0
-        rollDeg = 0
+        lng0 = parameterValueList[0]
+        lat0 = parameterValueList[1]
+        alt0 = parameterValueList[2]
+        tiltDeg = parameterValueList[3]
+        azimuthDeg = parameterValueList[4]
+        rollDeg = parameterValueList[5]
         focal = georef_utils.computeDiagonal(self.sizePicture[0], self.sizePicture[1])
 
-        (
-            lngComp,
-            latComp,
-            altComp,
-            azimuthComp,
-            tiltComp,
-            rollComp,
-            focalComp,
-            pComp,
-            gcp_comp_list,
-            imageCoordinates,
-            method,
-        ) = georef_utils.georeferencer(
-            lng0,
-            lat0,
-            alt0,
-            azimuthDeg,
-            tiltDeg,
-            rollDeg,
-            focal,
-            self.sizePicture[0],
-            self.sizePicture[1],
-            gcp_smapshot_list,
-            plotBool=False,
-        )
+        if parameterTypeList[0] == 2:
+            (
+                lngComp,
+                latComp,
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focalComp,
+                pComp,
+                gcpCompList,
+                imageCoordinates,
+                method,
+            ) = georef_utils.georeferencerLocked(
+                lng0,
+                lat0,
+                alt0,
+                azimuthDeg,
+                tiltDeg,
+                rollDeg,
+                focal,
+                self.sizePicture[0],
+                self.sizePicture[1],
+                gcpSmapshotList
+            )
+        else:
+            (
+                lngComp,
+                latComp,
+                altComp,
+                azimuthComp,
+                tiltComp,
+                rollComp,
+                focalComp,
+                pComp,
+                gcpCompList,
+                imageCoordinates,
+                method,
+            ) = georef_utils.georeferencer(
+                lng0,
+                lat0,
+                alt0,
+                azimuthDeg,
+                tiltDeg,
+                rollDeg,
+                focal,
+                self.sizePicture[0],
+                self.sizePicture[1],
+                gcpSmapshotList
+            )
 
-        point_lnglat = QgsPointXY(lngComp, latComp)
-        point_xy = reverse_transform.transform(point_lnglat)
+        pointLngLat = QgsPointXY(lngComp, latComp)
+        pointXY = reverseTransform.transform(pointLngLat)
 
         # Convert the computed pose location from EPSG:4326 to the current Crs
         resultLS = [
-            point_xy.x(),
-            point_xy.y(),
+            pointXY.x(),
+            pointXY.y(),
             altComp,
             azimuthComp,
             tiltComp,
@@ -380,51 +386,41 @@ class Pose_dialog(QtWidgets.QDialog):
         ]
         lookAt = [0, 0, 0]
         upWorld = [0, 0, 0]
-        predictions = [[gcp_comp["xReproj"], gcp_comp["yReproj"]] for gcp_comp in gcp_comp_list]
-        errors = [gcp_comp["dxy"] for gcp_comp in gcp_comp_list]
-        error_report = {"mean": mean(errors), "std": std(errors), "min": min(errors), "max": max(errors)}
+        predictions = [[gcpComp["xReproj"], gcpComp["yReproj"]] for gcpComp in gcpCompList]
+        errors = [gcp_comp["dxy"] for gcp_comp in gcpCompList]
+        errorReport = {"mean": mean(errors), "std": std(errors), "min": min(errors), "max": max(errors)}
 
         # Compute the result vector
-        result = [0]*9
-        # Length of resultLS is [9 - length of parameter_list]
-        # We reconstruct the "result" vector which contains the output parameters
-        k = 0
-        for i in range(9):
-            if (parameter_bool[i]==1) or (parameter_bool[i]==2):
-                result[i] = resultLS[k]
-                k +=1
-            else:
-                result[i]=parameter_list[i]
-        result[0] *= -1
+        result = [*resultLS, *parameterValueList[-2:]]
 
         # Set result in the dialog box
-        gcp_idx = 0
+        gcpIdx = 0
         self.poseLineEdit = []
         for line in self.findChildren(QtWidgets.QLineEdit):
-            value = result[gcp_idx]
-            if gcp_idx == 0:
+            value = result[gcpIdx]
+            if gcpIdx == 0:
                 value *= -1
-            if not smapshot_georeferencer and gcp_idx > 2 and gcp_idx < 6:
+            if not smapshotGeoreferencer and gcpIdx > 2 and gcpIdx < 6:
                 value *= old_div(180,pi)
-            if gcp_idx == 7:
+            if gcpIdx == 7:
                 value-=self.sizePicture[0]/2.0
-            if gcp_idx == 8:
+            if gcpIdx == 8:
                 value-=self.sizePicture[1]/2.0
             text = str(round(value,3))
             line.setText(text)
             self.poseLineEdit.append(text)
-            gcp_idx +=1
+            gcpIdx +=1
         
         # Set the variable for next computation and for openGL pose
-        self.parameter_bool = parameter_bool
-        self.parameter_list = parameter_list
+        self.parameterBool = parameterTypeList
+        self.parameterList = parameterValueList
         self.done = True
         self.result = result
         # self.LProj = Lproj OPENGL SPECIFIC - NOT NEEDED
         self.lookat = lookAt
         self.upWorld = upWorld
         self.predictions = predictions
-        self.error_report = error_report
+        self.errorReport = errorReport
         self.errors = errors
         self.pos = result[0:3]
         # The focal, here calculate in pixel, has to be translated in term of vertical field of view for openGL
@@ -434,10 +430,10 @@ class Pose_dialog(QtWidgets.QDialog):
             self.FOV = 0 
         self.roll = arcsin(-sin(result[3])*sin(result[5]))
         
-        gcp_idx = 0
+        gcpIdx = 0
         for radio in self.findChildren(QtWidgets.QRadioButton):
-            self.whoIsChecked[gcp_idx] = radio.isChecked()
-            gcp_idx +=1
+            self.whoIsChecked[gcpIdx] = radio.isChecked()
+            gcpIdx +=1
         # Update projected and reprojected points for drawing
         self.update.emit()
 

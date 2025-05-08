@@ -524,7 +524,7 @@ class GetGCPMainWindow(QMainWindow):
                 self.roll = self.poseDialogue.roll
                 self.paramPoseView = self.poseDialogue.result
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
-                self.XYZUsed = self.poseDialogue.gcp_xyz_used
+                self.XYZUsed = self.poseDialogue.gcpXYZUsed
                 self.GCPErrorPos()
                 self.getPositionInCanvas()
                 self.boolPose = True
