@@ -32,7 +32,7 @@ from qgis.core import *
 from qgis.gui import *
 from .ui.ui_disprast import Ui_disprast
 from .iconsdialog import icons_dialog
-from .posedialog import Pose_dialog
+from .posedialog import PoseDialog
 from PIL import Image
 from .GCPs import *
 from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
@@ -492,7 +492,7 @@ class GetGCPMainWindow(QMainWindow):
         self.refreshPictureGCP()
         rowCount = self.model.rowCount()
         # get needed inputs for pose estimation
-        self.poseDialogue = Pose_dialog(self.model, self.paramPoseView, self.positionFixed, self.sizePicture, self.whoIsChecked, self.pathToData, self.picture_name, self.iface, self.crs)
+        self.poseDialogue = PoseDialog(self.model, self.paramPoseView, self.sizePicture, self.whoIsChecked, self.pathToData, self.picture_name, self.iface, self.crs)
         self.poseDialogue.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.poseDialogue.update.connect(self.updatePose)
         self.poseDialogue.importUpdate.connect(self.updateWithImport)
@@ -526,17 +526,16 @@ class GetGCPMainWindow(QMainWindow):
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
                 self.XYZUsed = self.poseDialogue.gcpXYZUsed
                 self.GCPErrorPos()
-                self.getPositionInCanvas()
+                self.drawPoseInCanvas()
                 self.boolPose = True
                 # self.GoToMonoplotterButton.setEnabled(True)
                 self.ui.statusbar.showMessage('You can save GCPs in .dat file or save pose estimation in KML file')
-                
-                
+
         except ValueError:
            QMessageBox.warning(self, "Pose Estimation- Error","Failed to estimate pose, consider to provide apriori values")
-        
-    def updateWithImport(self) :
 
+
+    def updateWithImport(self) :
             self.lookat = self.poseDialogue.lookat
             self.upWorld = self.poseDialogue.upWorld
             self.pos = self.poseDialogue.pos
@@ -545,11 +544,11 @@ class GetGCPMainWindow(QMainWindow):
             self.paramPoseView = self.poseDialogue.result
             self.whoIsChecked = self.poseDialogue.whoIsChecked
             # self.GoToMonoplotterButton.setEnabled(True)
-            
-    
-    def getPositionInCanvas(self):
+
+
+    def drawPoseInCanvas(self):
         self.canvas.scene().removeItem(self.poseCanvas)
-        xPos = -self.paramPoseView[0]
+        xPos = self.paramPoseView[0]
         yPos = self.paramPoseView[1]
         
         points = QgsPointXY(xPos,yPos)

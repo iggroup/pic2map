@@ -37,11 +37,11 @@ import os
 from .GCPs import GCPTableModel
 from .smapshotgeoreferencer import georeferencerUtils as georef_utils
 
-class Pose_dialog(QtWidgets.QDialog):
+class PoseDialog(QtWidgets.QDialog):
     update = pyqtSignal()
     needRefresh = pyqtSignal()
     importUpdate = pyqtSignal()
-    def __init__(self, gcp_table_model: GCPTableModel, paramPosIni, positionFixed, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
+    def __init__(self, gcp_table_model: GCPTableModel, paramPosIni, sizePicture, whoIsChecked,pathToData,picture_name, iface,crs):
         #QtGui.QDialog.__init__(self)
         QtWidgets.QDialog.__init__(self)
         self.uiPoseDialog = Ui_PoseDialog()
@@ -58,7 +58,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.iface = iface
         self.crs = crs
         self.result = paramPosIni
-        self.uiPoseDialog.poseEstimationButton.clicked.connect(lambda: self.estimatePose(smapshotGeoreferencer=True))
+        self.uiPoseDialog.poseEstimationButton.clicked.connect(self.estimatePose)
         self.uiPoseDialog.reportButton.clicked.connect(self.showReportOnGCP)
         self.uiPoseDialog.importParamButton.clicked.connect(self.importPositionCamera)
         self.uiPoseDialog.cameraPositionButton.clicked.connect(self.savePositionCamera)
@@ -72,8 +72,6 @@ class Pose_dialog(QtWidgets.QDialog):
         self.poseLineEdit = []
         for line in self.findChildren(QtWidgets.QLineEdit):
                 value = self.paramPosIni[indice]
-                if indice == 0:
-                    value *= -1
                 #if indice > 2 and indice < 6:
                 #    value *= old_div(180,pi)
                 if indice == 7:
@@ -194,7 +192,7 @@ class Pose_dialog(QtWidgets.QDialog):
         self.uiPoseDialog.focalIni.setChecked(True)
         #self.uiPose.focalIni.toggle()
 
-    def estimatePose(self, smapshotGeoreferencer=False):
+    def estimatePose(self):
 
         # Function called when the user press "Estimate Pose"
         """
@@ -400,10 +398,6 @@ class Pose_dialog(QtWidgets.QDialog):
         self.poseLineEdit = []
         for line in self.findChildren(QtWidgets.QLineEdit):
             value = result[gcpIdx]
-            if gcpIdx == 0:
-                value *= -1
-            if not smapshotGeoreferencer and gcpIdx > 2 and gcpIdx < 6:
-                value *= old_div(180,pi)
             if gcpIdx == 7:
                 value-=self.sizePicture[0]/2.0
             if gcpIdx == 8:
