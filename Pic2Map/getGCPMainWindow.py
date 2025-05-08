@@ -510,7 +510,6 @@ class GetGCPMainWindow(QMainWindow):
             if not self.poseDialogue.done:
                 raise ValueError
             else:
-                
                 self.lookat = [0,0,0]
                 self.lookat[0] = self.poseDialogue.lookat[0]; self.lookat[2] = self.poseDialogue.lookat[1]; self.lookat[1] = self.poseDialogue.lookat[2]
                 

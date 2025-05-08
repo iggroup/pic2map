@@ -148,7 +148,7 @@ class PoseDialog(QtWidgets.QDialog):
         crsSource = QgsCoordinateReferenceSystem(crsS)
         crsTarget = QgsCoordinateReferenceSystem("EPSG:4326")
         xform = QgsCoordinateTransform(crsSource, crsTarget, QgsProject.instance())
-        LocalPos = xform.transform(QgsPointXY(-self.result[0],self.result[1]))
+        LocalPos = xform.transform(QgsPointXY(self.result[0],self.result[1]))
         intLong = int(LocalPos[0])
         if intLong > 0 :
             refLong = 'E'
@@ -528,12 +528,12 @@ class PoseDialog(QtWidgets.QDialog):
                 lookat_temp = array(dirWorld)+array([-fieldValue[0], fieldValue[1] , fieldValue[2]])
                 upWorld_temp = dot(linalg.inv(R),upCam.T) 
                 
-                self.pos = [-fieldValue[0], fieldValue[2], fieldValue[1]]
+                self.pos = [fieldValue[0], fieldValue[2], fieldValue[1]]
                 self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/fieldValue[6]))*180,pi)
                 self.roll = arcsin(-sin(tilt)*sin(swing))
                 self.lookat = array([lookat_temp[0], lookat_temp[2], lookat_temp[1]])
                 self.upWorld = array([upWorld_temp[0], upWorld_temp[2], upWorld_temp[1]])
-                self.result = [-fieldValue[0], fieldValue[1], fieldValue[2], fieldValue[3], fieldValue[4], fieldValue[5], fieldValue[6]]
+                self.result = [fieldValue[0], fieldValue[1], fieldValue[2], fieldValue[3], fieldValue[4], fieldValue[5], fieldValue[6]]
                 self.whoIsChecked = whoToCheck 
                 self.importUpdate.emit()
             
@@ -541,7 +541,7 @@ class PoseDialog(QtWidgets.QDialog):
                 self.refreshButton()
 
     def savePositionCamera(self) :
-        xPos = -self.result[0]
+        xPos = self.result[0]
         yPos = self.result[1]
         point = ogr.Geometry(ogr.wkbPoint)
         point.AddPoint(xPos, yPos)
@@ -607,7 +607,7 @@ class PoseDialog(QtWidgets.QDialog):
             feature = ogr.Feature(featureDefn)
             feature.SetGeometry(point)
             feature.SetField("picture", (self.picture_name.split(".")[0]).split("/")[-1])
-            feature.SetField("X",-self.result[0])
+            feature.SetField("X",self.result[0])
             feature.SetField("Y",self.result[1])
             feature.SetField("Z",self.result[2])
             feature.SetField("tilt",self.result[3])

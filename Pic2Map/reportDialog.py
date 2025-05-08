@@ -42,9 +42,6 @@ class ReportDialog(QtWidgets.QDialog):
         self.pathToData = pathToData
         self.xyzUnProjected = xyzUnProjected
         self.totalPointsOnHill = 0
-        paramList[3] = (paramList[3]*180)/pi 
-        paramList[4] = (paramList[4]*180)/pi
-        paramList[5] = (paramList[5]*180)/pi
         self.model = model
         self.error_report = error_report
         rowCount = model.rowCount()
