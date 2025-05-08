@@ -301,19 +301,21 @@ class Pose_dialog(QtWidgets.QDialog):
         gcpSmapshotList = []
         for gcpIdx in range(totalEnabledGcps):
             x, y, z = gcpXYZArray[gcpIdx]
-            pointXY = QgsPointXY(x, y)
-            pointLngLat = transform.transform(pointXY)
+            gcpPointXY = QgsPointXY(x, y)
+            gcpPointLngLat = transform.transform(gcpPointXY)
             gcpSmapshotList.append({
-                "longitude": pointLngLat.x(),
-                "latitude": pointLngLat.y(),
+                "longitude": gcpPointLngLat.x(),
+                "latitude": gcpPointLngLat.y(),
                 "altitude": z,
                 "x": gcpUVArray[gcpIdx, 0],
                 "y": gcpUVArray[gcpIdx, 1]
             })
 
         # Initial data (free)
-        lng0 = parameterValueList[0]
-        lat0 = parameterValueList[1]
+        posePointXY0 = QgsPointXY(parameterValueList[0], parameterValueList[1])
+        posePointLngLat0 = transform.transform(posePointXY0)
+        lng0 = posePointLngLat0.x()
+        lat0 = posePointLngLat0.y()
         alt0 = parameterValueList[2]
         tiltDeg = parameterValueList[3]
         azimuthDeg = parameterValueList[4]
@@ -371,13 +373,13 @@ class Pose_dialog(QtWidgets.QDialog):
                 gcpSmapshotList
             )
 
-        pointLngLat = QgsPointXY(lngComp, latComp)
-        pointXY = reverseTransform.transform(pointLngLat)
+        gcpPointLngLat = QgsPointXY(lngComp, latComp)
+        gcpPointXY = reverseTransform.transform(gcpPointLngLat)
 
         # Convert the computed pose location from EPSG:4326 to the current Crs
         resultLS = [
-            pointXY.x(),
-            pointXY.y(),
+            gcpPointXY.x(),
+            gcpPointXY.y(),
             altComp,
             azimuthComp,
             tiltComp,
