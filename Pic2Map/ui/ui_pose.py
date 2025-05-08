@@ -203,17 +203,17 @@ class Ui_PoseDialog(object):
         self.YPosLine.textEdited.connect(self.lineEditEdited)
         self.ZPosLine.textEdited.connect(self.lineEditEdited)
         
-        self.headingLine.setReadOnly(True)
-        self.headingFree.toggled.connect(self.headingFreeclicked)
-        self.headingIni.toggled.connect(self.headingIniclicked)
-        self.headingFixed.toggled.connect(self.headingFixedclicked)
-        self.headingLine.textEdited.connect(self.lineEditEdited)
-        
         self.tiltLine.setReadOnly(True)
         self.tiltFree.toggled.connect(self.tiltFreeclicked)
         self.tiltIni.toggled.connect(self.tiltIniclicked)
         self.tiltFixed.toggled.connect(self.tiltFixedclicked)
         self.tiltLine.textEdited.connect(self.lineEditEdited)
+        
+        self.headingLine.setReadOnly(True)
+        self.headingFree.toggled.connect(self.headingFreeclicked)
+        self.headingIni.toggled.connect(self.headingIniclicked)
+        self.headingFixed.toggled.connect(self.headingFixedclicked)
+        self.headingLine.textEdited.connect(self.lineEditEdited)
         
         self.swingLine.setReadOnly(True)
         self.swingFree.toggled.connect(self.swingFreeclicked)
@@ -234,31 +234,25 @@ class Ui_PoseDialog(object):
                 widget.hide()  # Hide each widget in the layout
 
     def lineEditEdited(self):
-        self.needRefresh.emit()  
-    def focalFreeclicked(self):
-        if self.focalFree.isChecked():
-            self.focalLine.setReadOnly(True)
-            self.needRefresh.emit()
-    def focalIniclicked(self):
-        if self.focalIni.isChecked():
-            self.focalLine.setReadOnly(False)
-            self.needRefresh.emit()
-    def focalFixedclicked(self):
-        if self.focalFixed.isChecked():
-            self.focalLine.setReadOnly(False)
-            self.needRefresh.emit() 
+        self.needRefresh.emit()
 
-    def swingFreeclicked(self):
-        if self.swingFree.isChecked():
-            self.swingLine.setReadOnly(True)
+    def XYZPosFreeclicked(self):
+        if self.XYZPosFree.isChecked():
+            self.XPosLine.setReadOnly(True)
+            self.YPosLine.setReadOnly(True)
+            self.ZPosLine.setReadOnly(True)
             self.needRefresh.emit()
-    def swingIniclicked(self):
-        if self.swingIni.isChecked():
-            self.swingLine.setReadOnly(False)
+    def XYZPosIniclicked(self):
+        if self.XYZPosIni.isChecked():
+            self.XPosLine.setReadOnly(False)
+            self.YPosLine.setReadOnly(False)
+            self.ZPosLine.setReadOnly(False)
             self.needRefresh.emit()
-    def swingFixedclicked(self):
-        if self.swingFixed.isChecked():
-            self.swingLine.setReadOnly(False)
+    def XYZPosFixedclicked(self):
+        if self.XYZPosFixed.isChecked():
+            self.XPosLine.setReadOnly(False)
+            self.YPosLine.setReadOnly(False)
+            self.ZPosLine.setReadOnly(False)
             self.needRefresh.emit()
 
     def tiltFreeclicked(self):
@@ -287,26 +281,33 @@ class Ui_PoseDialog(object):
             self.headingLine.setReadOnly(False)
             self.needRefresh.emit()
 
-    def XYZPosFreeclicked(self):
-        if self.XYZPosFree.isChecked():
-            self.XPosLine.setReadOnly(True)
-            self.YPosLine.setReadOnly(True)
-            self.ZPosLine.setReadOnly(True)
+    def swingFreeclicked(self):
+        if self.swingFree.isChecked():
+            self.swingLine.setReadOnly(True)
             self.needRefresh.emit()
-    def XYZPosIniclicked(self):
-        if self.XYZPosIni.isChecked():
-            self.XPosLine.setReadOnly(False)
-            self.YPosLine.setReadOnly(False)
-            self.ZPosLine.setReadOnly(False)
+    def swingIniclicked(self):
+        if self.swingIni.isChecked():
+            self.swingLine.setReadOnly(False)
             self.needRefresh.emit()
-    def XYZPosFixedclicked(self):
-        if self.XYZPosFixed.isChecked():
-            self.XPosLine.setReadOnly(False)
-            self.YPosLine.setReadOnly(False)
-            self.ZPosLine.setReadOnly(False)
+    def swingFixedclicked(self):
+        if self.swingFixed.isChecked():
+            self.swingLine.setReadOnly(False)
             self.needRefresh.emit()
-            
-            
+
+    def focalFreeclicked(self):
+        if self.focalFree.isChecked():
+            self.focalLine.setReadOnly(True)
+            self.needRefresh.emit()
+    def focalIniclicked(self):
+        if self.focalIni.isChecked():
+            self.focalLine.setReadOnly(False)
+            self.needRefresh.emit()
+    def focalFixedclicked(self):
+        if self.focalFixed.isChecked():
+            self.focalLine.setReadOnly(False)
+            self.needRefresh.emit()
+
+
     def retranslateUi(self, PoseDialog):
         PoseDialog.setWindowTitle(_translate("PoseDialog", "Pose estimation", None))
         
@@ -352,4 +353,3 @@ if __name__ == "__main__":
     ui.setupUi(PoseDialog)
     PoseDialog.show()
     sys.exit(app.exec())
-

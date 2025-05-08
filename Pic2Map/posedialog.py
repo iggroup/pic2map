@@ -262,20 +262,20 @@ class PoseDialog(QtWidgets.QDialog):
                         parameterTypeList.append(0) # The parameters is free
                         parameterValueList.append(0)
                     else:
-                            if (radioButton.text() == "Apriori"): #Apriori
-                                parameterTypeList.append(1) #The parameters is aprior
-                            elif (radioButton.text() == "Fixed"): #Fixed
-                                parameterTypeList.append(2) #The parameters is fixed
-                            value = float(lineEdits[parameterIdx].text())
-                            # if parameterIdx == 0:
-                            #     value = -value
-                            if parameterIdx > 2 and parameterIdx < 6:
-                                value *=  old_div(pi,180) #angle are displayed in degree
-                            if parameterIdx == 7:
-                                value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
-                            if parameterIdx == 8:
-                                value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
-                            parameterValueList.append(value)
+                        if (radioButton.text() == "Apriori"): #Apriori
+                            parameterTypeList.append(1) #The parameters is aprior
+                        elif (radioButton.text() == "Fixed"): #Fixed
+                            parameterTypeList.append(2) #The parameters is fixed
+                        value = float(lineEdits[parameterIdx].text())
+                        # if parameterIdx == 0:
+                        #     value = -value
+                        if parameterIdx > 2 and parameterIdx < 6:
+                            value *=  old_div(pi,180) #angle are displayed in degree
+                        if parameterIdx == 7:
+                            value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
+                        if parameterIdx == 8:
+                            value += self.sizePicture[1]/2.0  #central point is displayed in reference to the center of image
+                        parameterValueList.append(value)
                     parameterIdx += 1
 
         # We fix anyway the central point. Future work can take it into account. It is therefore used here as parameter.
@@ -402,7 +402,7 @@ class PoseDialog(QtWidgets.QDialog):
                 value-=self.sizePicture[0]/2.0
             if gcpIdx == 8:
                 value-=self.sizePicture[1]/2.0
-            text = str(round(value,3))
+            text = str(round(value,4))
             line.setText(text)
             self.poseLineEdit.append(text)
             gcpIdx +=1
@@ -472,7 +472,6 @@ class PoseDialog(QtWidgets.QDialog):
                 self.uiPoseDialog.reportButton.setStyleSheet("background-color: rgb(90, 255, 90);")
 
     def importPositionCamera(self):
-        
         fieldName = ["X", "Y", "Z", "tilt", "heading", "swing", "focal"]
         fieldValue = []
         allField = True
