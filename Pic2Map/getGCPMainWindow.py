@@ -840,7 +840,7 @@ class GetGCPMainWindow(QMainWindow):
             self.resizeCross(self.zoomFactor)
 
         else :
-            self.ui.statusbar.showMessage('Get 3D coordinate by clicking in the QGIS canvas or in the 3D view')
+            self.ui.statusbar.showMessage('Get coordinate by clicking in the QGIS canvas')
             if self.ui.tableView.selectedIndexes() != []:
                 if ev.button() == Qt.MouseButton.LeftButton:
                     a = ev.scenePos()
