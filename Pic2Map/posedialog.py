@@ -419,12 +419,14 @@ class PoseDialog(QtWidgets.QDialog):
         self.errorReport = errorReport
         self.errors = errors
         self.pos = result[0:3]
+        self.tilt = result[3]
+        self.heading = result[4]
+        self.swing = result[5]
         # The focal, here calculate in pixel, has to be translated in term of vertical field of view for openGL
         if result[6] != 0 :
             self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/result[6]))*180,pi)
         else :
             self.FOV = 0 
-        self.roll = arcsin(-sin(result[3])*sin(result[5]))
         
         gcpIdx = 0
         for radio in self.findChildren(QtWidgets.QRadioButton):
