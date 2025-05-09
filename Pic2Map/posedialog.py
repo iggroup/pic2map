@@ -269,8 +269,8 @@ class PoseDialog(QtWidgets.QDialog):
                         value = float(lineEdits[parameterIdx].text())
                         # if parameterIdx == 0:
                         #     value = -value
-                        if parameterIdx > 2 and parameterIdx < 6:
-                            value *=  old_div(pi,180) #angle are displayed in degree
+                        # if parameterIdx > 2 and parameterIdx < 6:
+                        #     value *=  old_div(pi,180) #angle are displayed in degree
                         if parameterIdx == 7:
                             value += self.sizePicture[0]/2.0 #central point is displayed in reference to the center of image
                         if parameterIdx == 8:
@@ -312,16 +312,18 @@ class PoseDialog(QtWidgets.QDialog):
                 "y": gcpUVArray[gcpIdx, 1]
             })
 
-        # Initial data (free)
+        # Initial data
         posePointXY0 = QgsPointXY(parameterValueList[0], parameterValueList[1])
         posePointLngLat0 = transform.transform(posePointXY0)
         lng0 = posePointLngLat0.x()
         lat0 = posePointLngLat0.y()
         alt0 = parameterValueList[2]
-        tiltDeg = parameterValueList[3]
-        azimuthDeg = parameterValueList[4]
-        rollDeg = parameterValueList[5]
-        focal = georef_utils.computeDiagonal(self.sizePicture[0], self.sizePicture[1])
+        # The smapshot georeferencer uses Cesium angles where a tilt of 0 is facing forward and 90/-90 is facing up/down.
+        # We prefer a tilt of 0 facing down, 90 facing forward and 180 facing up.
+        tilt0 = parameterValueList[3] - 90
+        azimuth0 = parameterValueList[4]
+        roll0 = parameterValueList[5]
+        focal0 = georef_utils.computeDiagonal(self.sizePicture[0], self.sizePicture[1])
 
         if parameterTypeList[0] == 2:
             (
@@ -340,10 +342,10 @@ class PoseDialog(QtWidgets.QDialog):
                 lng0,
                 lat0,
                 alt0,
-                azimuthDeg,
-                tiltDeg,
-                rollDeg,
-                focal,
+                azimuth0,
+                tilt0,
+                roll0,
+                focal0,
                 self.sizePicture[0],
                 self.sizePicture[1],
                 gcpSmapshotList
@@ -365,27 +367,36 @@ class PoseDialog(QtWidgets.QDialog):
                 lng0,
                 lat0,
                 alt0,
-                azimuthDeg,
-                tiltDeg,
-                rollDeg,
-                focal,
+                azimuth0,
+                tilt0,
+                roll0,
+                focal0,
                 self.sizePicture[0],
                 self.sizePicture[1],
                 gcpSmapshotList
             )
 
-        gcpPointLngLat = QgsPointXY(lngComp, latComp)
-        gcpPointXY = reverseTransform.transform(gcpPointLngLat)
+        poseLngLat = QgsPointXY(lngComp, latComp)
+        poseXY = reverseTransform.transform(poseLngLat)
+        # The smapshot georeferencer uses Cesium angles where a tilt of 0 is facing forward and 90/-90 is facing up/down.
+        # We prefer a tilt of 0 facing down, 90 facing forward and 180 facing up.
+        tiltComp += 90
+        if tiltComp > 180:
+            tiltComp -= 360
+        if azimuthComp > 180:
+            azimuthComp -= 360
+        if rollComp > 180:
+            rollComp -= 360
 
         # Convert the computed pose location from EPSG:4326 to the current Crs
         resultLS = [
-            gcpPointXY.x(),
-            gcpPointXY.y(),
+            poseXY.x(),
+            poseXY.y(),
             altComp,
             tiltComp, # Careful with the order here
             azimuthComp,
             rollComp,
-            focal
+            focalComp
         ]
         lookAt = [0, 0, 0]
         upWorld = [0, 0, 0]
