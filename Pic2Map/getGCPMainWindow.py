@@ -35,12 +35,12 @@ from .iconsdialog import icons_dialog
 from .posedialog import PoseDialog
 from PIL import Image
 from .GCPs import *
-from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
+from numpy import abs, asarray, tan
 from .D3View import D3_view
 # FIXME QtXml is no longer supported.
 from PyQt6 import QtXml
 import os
-from math import ceil
+from math import ceil, radians
 
 try:
     QString = str
@@ -218,7 +218,7 @@ class GetGCPMainWindow(QMainWindow):
 
     def saveAsKML(self):
         # Save the pose in KML file. It can be open in googleEarth
-        if self.pos :        
+        if self.pos:
             crsT = "EPSG:" + str(self.crs.postgisSrid())
             crsSource = QgsCoordinateReferenceSystem(crsT)
             crsTarget = QgsCoordinateReferenceSystem("EPSG:4326")
@@ -227,13 +227,24 @@ class GetGCPMainWindow(QMainWindow):
             altitude = self.pos[1]
             est = WGSPos[0]
             nord = WGSPos[1]
+            # The smapshot georeferencer uses Cesium angles where a tilt of 0 is facing forward and 90/-90 is facing up/down.
+            # KML uses a tilt of 0 facing down, 90 facing forward and 180 facing up.
+            tilt = 90 + (self.tilt -360) % 360
+            if tilt > 180:
+                tilt -= 360
+            heading = (self.heading % 360)
+            if heading > 180:
+                heading -= 360
+            swing = self.swing
+            if swing > 180:
+                swing -= 360
             ratio = self.sizePicture[0]/float(self.sizePicture[1])
             leftFOV = -ratio*self.FOV/2.0
             rightFOV = ratio*self.FOV/2.0
             topFOV = self.FOV/2.0
             bottomFOV = -self.FOV/2.0
             near = 300.0
-            self.writeKML(est, nord, altitude, self.heading, self.tilt, self.swing, leftFOV, rightFOV, topFOV, bottomFOV, near)
+            self.writeKML(est, nord, altitude, heading, tilt, swing, leftFOV, rightFOV, topFOV, bottomFOV, near)
             self.ui.statusbar.showMessage('Pose saved in KML file')
         else:
              QMessageBox.warning(self,"Error","Pose not valid")
@@ -309,17 +320,26 @@ class GetGCPMainWindow(QMainWindow):
                             #QMessageBox.warning(QMainWindow(),"Error","Could not use xml file. Problem of altitude definition (2).")
 
                     self.pos = [LocalPos[0], LocalPos[1], altitude]
-                    self.tilt = tilt
+                    self.tilt = tilt - 90
+                    if self.tilt < 0:
+                        self.tilt += 360
                     self.heading = heading
+                    if self.heading < 0:
+                        self.heading += 360
                     self.swing = roll
-                    self.FOV = 2*topFov
+                    if self.swing < 0:
+                        self.swing += 360
 
-                    self.paramPoseView = [*self.pos, self.tilt, self.heading, self.swing, self.FOV]
+                    ratio = self.sizePicture[0]/float(self.sizePicture[1])
+                    self.FOV = -2*leftFov/ratio
+                    focal = float(self.sizePicture[1] / (2 * tan(radians(self.FOV / 2))))
+
+                    self.paramPoseView = [*self.pos, self.tilt, self.heading, self.swing, focal]
 
                     # Display the loaded pose
                     self.drawPoseInCanvas()
-                    
-                        
+
+
     def fixFocal(self, focalPixel):
         self.paramPoseView[6] = focalPixel
         self.whoIsChecked[19] = False
@@ -982,7 +1002,7 @@ class GetGCPMainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         
-    def writeKML(self, est, nord, altitude,  heading, tilt, roll, leftFOV, rightFOV, topFOV, bottomFOV, near):
+    def writeKML(self, est, nord, altitude, heading, tilt, roll, leftFOV, rightFOV, topFOV, bottomFOV, near):
         # Write the KML 
        
         #The path is the same as the one use for the initialization step

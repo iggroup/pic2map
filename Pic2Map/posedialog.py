@@ -379,8 +379,8 @@ class PoseDialog(QtWidgets.QDialog):
             gcpPointXY.x(),
             gcpPointXY.y(),
             altComp,
+            tiltComp, # Careful with the order here
             azimuthComp,
-            tiltComp,
             rollComp,
             focal
         ]
