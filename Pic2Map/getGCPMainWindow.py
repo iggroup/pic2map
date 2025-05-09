@@ -214,7 +214,7 @@ class GetGCPMainWindow(QMainWindow):
         self.positionFixed = False
         # indice for fixed or free parameters for pose estimation
         self.whoIsChecked = [True, False, False]*7
-        self.ui.statusbar.showMessage('Need at least 4 GCP and apriori values or 6 GCP for pose estimation')
+        self.ui.statusbar.showMessage('Need at least 4 GCPs for pose estimation')
 
     def saveAsKML(self):
         # Save the pose in KML file. It can be open in googleEarth

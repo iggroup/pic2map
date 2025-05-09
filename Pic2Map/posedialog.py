@@ -286,6 +286,9 @@ class PoseDialog(QtWidgets.QDialog):
         parameterTypeList.append(0)
         parameterValueList.append(old_div(self.sizePicture[1],2))
 
+        if totalGcps < 4:
+            QMessageBox.warning(self, "Not enough GCPs", "You need at least 4 GCPs to compute a pose.")
+            return
 
         ##########################
         # SMAPSHOT GEOREFERENCER #
