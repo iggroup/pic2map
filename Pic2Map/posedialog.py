@@ -522,20 +522,20 @@ class PoseDialog(QtWidgets.QDialog):
             
             if allField :
 
-                tilt = (fieldValue[3]*pi)/180 
-                heading = (fieldValue[4]*pi)/180 
-                swing = (fieldValue[5]*pi)/180 
+                tiltRad = (fieldValue[3]*pi)/180 
+                headingRad = (fieldValue[4]*pi)/180 
+                swingRad = (fieldValue[5]*pi)/180 
 
                 R = zeros((3,3))
-                R[0,0] = -cos(heading)*cos(swing)-sin(heading)*cos(tilt)*sin(swing)
-                R[0,1] =  sin(heading)*cos(swing)-cos(heading)*cos(tilt)*sin(swing) 
-                R[0,2] = -sin(tilt)*sin(swing)
-                R[1,0] =  cos(heading)*sin(swing)-sin(heading)*cos(tilt)*cos(swing)
-                R[1,1] = -sin(heading)*sin(swing)-cos(heading)*cos(tilt)*cos(swing) 
-                R[1,2] = -sin(tilt)*cos(swing)
-                R[2,0] = -sin(heading)*sin(tilt)
-                R[2,1] = -cos(heading)*sin(tilt)
-                R[2,2] =  cos(tilt)
+                R[0,0] = -cos(headingRad)*cos(swingRad)-sin(headingRad)*cos(tiltRad)*sin(swingRad)
+                R[0,1] =  sin(headingRad)*cos(swingRad)-cos(headingRad)*cos(tiltRad)*sin(swingRad) 
+                R[0,2] = -sin(tiltRad)*sin(swingRad)
+                R[1,0] =  cos(headingRad)*sin(swingRad)-sin(headingRad)*cos(tiltRad)*cos(swingRad)
+                R[1,1] = -sin(headingRad)*sin(swingRad)-cos(headingRad)*cos(tiltRad)*cos(swingRad) 
+                R[1,2] = -sin(tiltRad)*cos(swingRad)
+                R[2,0] = -sin(headingRad)*sin(tiltRad)
+                R[2,1] = -cos(headingRad)*sin(tiltRad)
+                R[2,2] =  cos(tiltRad)
 
                 dirCam = array([0,0,-fieldValue[6]])
                 upCam = array([0,-1,0])
@@ -545,8 +545,11 @@ class PoseDialog(QtWidgets.QDialog):
                 upWorld_temp = dot(linalg.inv(R),upCam.T) 
                 
                 self.pos = [fieldValue[0], fieldValue[2], fieldValue[1]]
+                self.tilt = fieldValue[3]
+                self.heading = fieldValue[4]
+                self.swing = fieldValue[5]
                 self.FOV = old_div((2*arctan(float(self.sizePicture[1]/2.0)/fieldValue[6]))*180,pi)
-                self.roll = arcsin(-sin(tilt)*sin(swing))
+                self.roll = arcsin(-sin(tiltRad)*sin(swingRad))
                 self.lookat = array([lookat_temp[0], lookat_temp[2], lookat_temp[1]])
                 self.upWorld = array([upWorld_temp[0], upWorld_temp[2], upWorld_temp[1]])
                 self.result = [fieldValue[0], fieldValue[1], fieldValue[2], fieldValue[3], fieldValue[4], fieldValue[5], fieldValue[6]]
