@@ -32,15 +32,15 @@ from qgis.core import *
 from qgis.gui import *
 from .ui.ui_disprast import Ui_disprast
 from .iconsdialog import icons_dialog
-from .posedialog import Pose_dialog
+from .posedialog import PoseDialog
 from PIL import Image
 from .GCPs import *
-from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, abs, asarray, tan
+from numpy import abs, asarray, tan
 from .D3View import D3_view
 # FIXME QtXml is no longer supported.
 from PyQt6 import QtXml
 import os
-from math import ceil
+from math import ceil, radians
 
 try:
     QString = str
@@ -206,44 +206,34 @@ class GetGCPMainWindow(QMainWindow):
         # Following are parameters for pose estimation
         # The variables are chosen such that the integration of openGL is straightforward
         self.pos = None
+        self.swing = 0
         self.lookat = None
         self.FOV = 30
-        self.roll = 0
         self.upWorld = asarray([0,1,0])
         self.paramPoseView  = [0,0,0,0,0,0,0,self.sizePicture[0]/2.0,self.sizePicture[1]/2.0]
         self.positionFixed = False
         # indice for fixed or free parameters for pose estimation
         self.whoIsChecked = [True, False, False]*7
-        self.ui.statusbar.showMessage('Need at least 4 GCP and apriori values or 6 GCP for pose estimation')
-                
+        self.ui.statusbar.showMessage('Need at least 4 GCPs for pose estimation')
+
     def saveAsKML(self):
         # Save the pose in KML file. It can be open in googleEarth
-        if self.pos :
-            pos = self.pos
-            roll = self.roll
-            FOV = self.FOV
-            lookat = self.lookat
-            dx = pos[0]-lookat[0]
-            dy = pos[2]-lookat[2]
-            dz = pos[1]-lookat[1]
-            heading = old_div(arctan2(dx,-dy)*180,pi)
-            tilt = old_div(arctan(old_div(-dz,sqrt(dx**2+dy**2)))*180,pi)+90
-            
+        if self.pos:
             crsT = "EPSG:" + str(self.crs.postgisSrid())
             crsSource = QgsCoordinateReferenceSystem(crsT)
             crsTarget = QgsCoordinateReferenceSystem("EPSG:4326")
             xform = QgsCoordinateTransform(crsSource, crsTarget, QgsProject.instance())
-            WGSPos = xform.transform(QgsPointXY(-pos[0],pos[2]))
-            altitude = pos[1]
+            WGSPos = xform.transform(QgsPointXY(self.pos[0],self.pos[2]))
+            altitude = self.pos[1]
             est = WGSPos[0]
             nord = WGSPos[1]
             ratio = self.sizePicture[0]/float(self.sizePicture[1])
-            leftFOV = -ratio*FOV/2.0
-            rightFOV = ratio*FOV/2.0
-            topFOV = FOV/2.0
-            bottomFOV = -FOV/2.0
+            leftFOV = -ratio*self.FOV/2.0
+            rightFOV = ratio*self.FOV/2.0
+            topFOV = self.FOV/2.0
+            bottomFOV = -self.FOV/2.0
             near = 300.0
-            self.writeKML(est, nord, altitude, heading, tilt, roll, leftFOV, rightFOV, topFOV, bottomFOV, near)
+            self.writeKML(est, nord, altitude, self.heading, self.tilt, self.swing, leftFOV, rightFOV, topFOV, bottomFOV, near)
             self.ui.statusbar.showMessage('Pose saved in KML file')
         else:
              QMessageBox.warning(self,"Error","Pose not valid")
@@ -262,7 +252,7 @@ class GetGCPMainWindow(QMainWindow):
             return False
         else:
             # FIXME QtXml is no longer supported.
-            doc = QtXml.QDomDocument("EnvironmentML");
+            doc = QtXml.QDomDocument("EnvironmentML")
             if(not doc.setContent(file)):
                 file.close()
                 QMessageBox.warning(self,"Error","Could not parse xml file.")
@@ -275,9 +265,9 @@ class GetGCPMainWindow(QMainWindow):
                     longitude = float(doc.elementsByTagName('longitude').at(0).firstChild().toText().data())
                     latitude = float(doc.elementsByTagName('latitude').at(0).firstChild().toText().data())
                     altitude = float(doc.elementsByTagName('altitude').at(0).firstChild().toText().data())
-                    Heading = float(doc.elementsByTagName('heading').at(0).firstChild().toText().data())
-                    Tilt = float(doc.elementsByTagName('tilt').at(0).firstChild().toText().data())
-                    Roll = float(doc.elementsByTagName('roll').at(0).firstChild().toText().data())
+                    heading = float(doc.elementsByTagName('heading').at(0).firstChild().toText().data())
+                    tilt = float(doc.elementsByTagName('tilt').at(0).firstChild().toText().data())
+                    roll = float(doc.elementsByTagName('roll').at(0).firstChild().toText().data())
                     altitudeMode = doc.elementsByTagName('altitudeMode').at(0).firstChild().toText().data()
                     if altitudeMode == '':
                         altitudeMode = doc.elementsByTagName('gx:altitudeMode').at(0).firstChild().toText().data()
@@ -285,10 +275,6 @@ class GetGCPMainWindow(QMainWindow):
                     rightFov = float(doc.elementsByTagName('rightFov').at(0).firstChild().toText().data())
                     bottomFov = float(doc.elementsByTagName('bottomFov').at(0).firstChild().toText().data())
                     topFov = float(doc.elementsByTagName('topFov').at(0).firstChild().toText().data())
-                    try:
-                        Rotation = float(doc.elementsByTagName('rotation').at(0).firstChild().toText().data())
-                    except:
-                        Rotation = 0
                 except:
                      QMessageBox.warning(self,"Error","Could not use xml file. Problem parsing.")
                 else:
@@ -321,75 +307,21 @@ class GetGCPMainWindow(QMainWindow):
                             altitude = altitude + value
                         #except :
                             #QMessageBox.warning(QMainWindow(),"Error","Could not use xml file. Problem of altitude definition (2).")
-                    pos = [-LocalPos[0], altitude, LocalPos[1]]
-                    FOV = 2*topFov
-                    heading = Heading/180.0*pi
-                    roll = Rotation/180.0*pi
-                    tilt = Tilt/180.0*pi
-                    swing = -roll
 
-                    self.paramPoseView[0] = -LocalPos[0]
-                    self.paramPoseView[1] = LocalPos[1]
-                    self.paramPoseView[2] = altitude
-                    self.paramPoseView[3] = Tilt
-                    self.paramPoseView[4] = -Heading
-                    self.paramPoseView[5] = -Rotation*180.0/pi
-                    radFOV = FOV*pi/180
-                    self.paramPoseView[6] = self.sizePicture[1]/(2*tan(radFOV/2))
-                    self.whoIsChecked = [False, True, False]*7
+                    self.pos = [LocalPos[0], LocalPos[1], altitude]
+                    self.tilt = tilt
+                    self.heading = heading
+                    self.swing = roll
+                    ratio = self.sizePicture[0]/float(self.sizePicture[1])
+                    self.FOV = -2*leftFov/ratio
+                    focal = float(self.sizePicture[1] / (2 * tan(radians(self.FOV / 2))))
 
-                    
+                    self.paramPoseView = [*self.pos, self.tilt, self.heading, self.swing, focal]
 
-                    #try:
-                    #    swing = arcsin(sin(roll)/(-sin(tilt)))
-                    #except ZeroDivisionError:
-                    #    print 'zero div'
-                    #    swing = 0
-     
-                    
-                    
-                    #Create a rotation matrix . the point [0,0,-1] is rotated for the openGL "lookat" function.
-                    R = zeros((3,3))
-                    R[0,0] = -cos(heading)*cos(swing)-sin(heading)*cos(tilt)*sin(swing)
-                    R[0,1] =  sin(heading)*cos(swing)-cos(heading)*cos(tilt)*sin(swing) 
-                    R[0,2] = -sin(tilt)*sin(swing)
-                    R[1,0] =  cos(heading)*sin(swing)-sin(heading)*cos(tilt)*cos(swing)
-                    R[1,1] = -sin(heading)*sin(swing)-cos(heading)*cos(tilt)*cos(swing) 
-                    R[1,2] = -sin(tilt)*cos(swing)
-                    R[2,0] = -sin(heading)*sin(tilt)
-                    R[2,1] = -cos(heading)*sin(tilt)
-                    R[2,2] =  cos(tilt)
-                    # Get "look at" vector for openGL pose
-                    ######################################
-                    
-                    #Generate vectors in camera system
-                    dirCam = array([0.,0.,-1.])
-                    upCam = array([0.,1.,0.])
-                    downCam = array([0.,1.,0.])
-                    
-                    #Rotate in the world system
-                    dirWorld = dot(linalg.inv(R),dirCam.T)
-                    lookat_temp = array(dirWorld)+array([LocalPos[0], LocalPos[1] , altitude])
-                    lookat = array([-lookat_temp[0], lookat_temp[2], lookat_temp[1]])
-                    
-                    upWorld_temp = dot(linalg.inv(R),upCam.T) 
-                    upWorld = array([-upWorld_temp[0], -upWorld_temp[2], upWorld_temp[1]])
-        
-                    #not_awesome_vector = array([0,0,-1])
-                    #fast_awesome_vector = dot(linalg.inv(R),not_awesome_vector)
-                    #awesome_vector = array(fast_awesome_vector)+array([LocalPos[0], LocalPos[1] , altitude])
-                    #lookat = array([-awesome_vector[0], awesome_vector[2], awesome_vector[1]])
-                    
-                    # Get parameters for pose in openGL
-                    self.roll = roll
-                    self.FOV = FOV
-                    self.pos = pos
-                    self.lookat = lookat
-                    self.upWorld = upWorld
-                    self.ui.statusbar.showMessage('Pose loaded from KML file.')
-                    # self.GoToMonoplotterButton.setEnabled(True)
-                    
-                        
+                    # Display the loaded pose
+                    self.drawPoseInCanvas()
+
+
     def fixFocal(self, focalPixel):
         self.paramPoseView[6] = focalPixel
         self.whoIsChecked[19] = False
@@ -418,7 +350,7 @@ class GetGCPMainWindow(QMainWindow):
         
     def call3DView(self):
         # create an openGL window.
-        self.view3D = D3_view(self.pointBuffer, None,  self.roll, self.FOV, 100, self.pos, self.lookat, self.upWorld, self.isFrameBufferSupported)
+        self.view3D = D3_view(self.pointBuffer, None,  self.swing, self.FOV, 100, self.pos, self.lookat, self.upWorld, self.isFrameBufferSupported)
         self.view3D.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.view3D.show()
         # emit when left click and Ctrl is pressed
@@ -492,7 +424,7 @@ class GetGCPMainWindow(QMainWindow):
         self.refreshPictureGCP()
         rowCount = self.model.rowCount()
         # get needed inputs for pose estimation
-        self.poseDialogue = Pose_dialog(self.model, self.paramPoseView, self.positionFixed, self.sizePicture, self.whoIsChecked, self.pathToData, self.picture_name, self.iface, self.crs)
+        self.poseDialogue = PoseDialog(self.model, self.paramPoseView, self.sizePicture, self.whoIsChecked, self.pathToData, self.picture_name, self.iface, self.crs)
         self.poseDialogue.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
         self.poseDialogue.update.connect(self.updatePose)
         self.poseDialogue.importUpdate.connect(self.updateWithImport)
@@ -510,7 +442,6 @@ class GetGCPMainWindow(QMainWindow):
             if not self.poseDialogue.done:
                 raise ValueError
             else:
-                
                 self.lookat = [0,0,0]
                 self.lookat[0] = self.poseDialogue.lookat[0]; self.lookat[2] = self.poseDialogue.lookat[1]; self.lookat[1] = self.poseDialogue.lookat[2]
                 
@@ -519,37 +450,40 @@ class GetGCPMainWindow(QMainWindow):
                 
                 self.pos = [0,0,0]
                 self.pos[0] = self.poseDialogue.pos[0]; self.pos[2] = self.poseDialogue.pos[1]; self.pos[1] = self.poseDialogue.pos[2]
+                self.tilt = self.poseDialogue.tilt
+                self.heading = self.poseDialogue.heading
+                self.swing = self.poseDialogue.swing
                 
                 self.FOV = self.poseDialogue.FOV
-                self.roll = self.poseDialogue.roll
                 self.paramPoseView = self.poseDialogue.result
                 self.whoIsChecked = self.poseDialogue.whoIsChecked
-                self.XYZUsed = self.poseDialogue.gcp_xyz_used
+                self.XYZUsed = self.poseDialogue.gcpXYZUsed
                 self.GCPErrorPos()
-                self.getPositionInCanvas()
+                self.drawPoseInCanvas()
                 self.boolPose = True
                 # self.GoToMonoplotterButton.setEnabled(True)
                 self.ui.statusbar.showMessage('You can save GCPs in .dat file or save pose estimation in KML file')
-                
-                
+
         except ValueError:
            QMessageBox.warning(self, "Pose Estimation- Error","Failed to estimate pose, consider to provide apriori values")
-        
-    def updateWithImport(self) :
 
+
+    def updateWithImport(self) :
             self.lookat = self.poseDialogue.lookat
             self.upWorld = self.poseDialogue.upWorld
             self.pos = self.poseDialogue.pos
+            self.tilt = self.poseDialogue.tilt
+            self.heading = self.poseDialogue.heading
+            self.swing = self.poseDialogue.swing
             self.FOV = self.poseDialogue.FOV
-            self.roll = self.poseDialogue.roll
             self.paramPoseView = self.poseDialogue.result
             self.whoIsChecked = self.poseDialogue.whoIsChecked
             # self.GoToMonoplotterButton.setEnabled(True)
-            
-    
-    def getPositionInCanvas(self):
+
+
+    def drawPoseInCanvas(self):
         self.canvas.scene().removeItem(self.poseCanvas)
-        xPos = -self.paramPoseView[0]
+        xPos = self.paramPoseView[0]
         yPos = self.paramPoseView[1]
         
         points = QgsPointXY(xPos,yPos)
@@ -888,7 +822,7 @@ class GetGCPMainWindow(QMainWindow):
             self.resizeCross(self.zoomFactor)
 
         else :
-            self.ui.statusbar.showMessage('Get 3D coordinate by clicking in the QGIS canvas or in the 3D view')
+            self.ui.statusbar.showMessage('Get coordinate by clicking in the QGIS canvas')
             if self.ui.tableView.selectedIndexes() != []:
                 if ev.button() == Qt.MouseButton.LeftButton:
                     a = ev.scenePos()
@@ -1050,7 +984,7 @@ class GetGCPMainWindow(QMainWindow):
         qr.moveCenter(cp)
         self.move(qr.topLeft())
         
-    def writeKML(self, est, nord, altitude,  heading, tilt, roll, leftFOV, rightFOV, topFOV, bottomFOV, near):
+    def writeKML(self, est, nord, altitude, heading, tilt, roll, leftFOV, rightFOV, topFOV, bottomFOV, near):
         # Write the KML 
        
         #The path is the same as the one use for the initialization step
@@ -1065,7 +999,7 @@ class GetGCPMainWindow(QMainWindow):
             picturePathKML = self.picture_name
        
        #Get the name of the saved KML file
-        fName = QFileDialog.getSaveFileName(self,"save file dialog" ,path,"Images (*.kml)")[0]
+        fName = QFileDialog.getSaveFileName(self,"save file dialog", path, "Images (*.kml)")[0]
         if fName:
             f = open(fName, 'w')
             f.write(
@@ -1079,7 +1013,7 @@ class GetGCPMainWindow(QMainWindow):
       <altitude>%.10f</altitude>
       <heading>%.10f</heading>
       <tilt>%.10f</tilt>
-      <roll>0.0</roll>
+      <roll>%.10f</roll>
       <altitudeMode>absolute</altitudeMode>
     </Camera>
     <Style>
@@ -1101,7 +1035,6 @@ class GetGCPMainWindow(QMainWindow):
     <Icon>
       <href>%s</href>
     </Icon>
-    <rotation>%.10f</rotation>
     <ViewVolume>
       <leftFov>%.10f</leftFov>
       <rightFov>%.10f</rightFov>
@@ -1115,7 +1048,7 @@ class GetGCPMainWindow(QMainWindow):
     </Point>
 </PhotoOverlay>
 </kml>"""  % (self.picture_name, est, nord, altitude, 
-                      heading, tilt, picturePathKML, roll,
+                      heading, tilt, roll, picturePathKML,
                       leftFOV,rightFOV,bottomFOV,topFOV,near,
                       est,nord,altitude) ) 
             f.close()
