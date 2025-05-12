@@ -4,6 +4,8 @@ Pic2Map is a QGIS plugin that computes the 3D orientation of a picture and provi
 
 This repository is a fork from the deprecated https://github.com/tproduit/pic2map library.
 
+**WARNING: This plugin only supports Qt6 QGIS versions!**
+
 **Key features**
 - **Pose estimation** : Computes the location and orientation of a picture with 3D Ground Control Points. The orientation can be saved in a Google Earth format.
 - **Map-Picture interactions** : Provides the interaction between the map and the picture through a Digital Elevation Model. Vector layers can be overlaid on the picture, geographic vector layer can be digitized directly in the picture, the picture can be "orthorectified".
