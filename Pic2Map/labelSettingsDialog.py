@@ -9,11 +9,11 @@
  ***************************************************************************/
 """
 
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from .ui_label_settings import Ui_LabelSetting
+from PyQt6 import QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from .ui.ui_label_settings import Ui_LabelSetting
 from functools import partial
 
 class label_dialog(QtWidgets.QDialog):
@@ -33,7 +33,7 @@ class label_dialog(QtWidgets.QDialog):
                 
     def center(self):
         qr = self.frameGeometry()
-        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     

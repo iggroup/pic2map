@@ -22,24 +22,21 @@ from __future__ import print_function
 from builtins import str
 from builtins import range
 from past.utils import old_div
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6 import QtGui, QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from qgis.core import *
 from qgis.gui import *
 from .QGL_monoplotter import QGLMonoplotter
-from .ui_monoplotter import Ui_Monoplotter
-from .drapping import drappingMain
-from .ui_buffering import Ui_Form
+from .ui.ui_monoplotter import Ui_Monoplotter
+from .ui.ui_buffering import Ui_Form
 from .labelSettingsDialog import label_dialog
 from .measure3D import mesure3DDialog
 from .ortho import viewOrtho_class
 from osgeo import gdal, osr, ogr
 import os
 from PIL import Image
-from scipy import misc
-from scipy.spatial import KDTree
 from numpy import zeros, concatenate, dot, linalg, pi, arctan2, ones, array
 import numpy as np
 import matplotlib.pyplot as plt
@@ -52,7 +49,7 @@ from matplotlib import colors
 #from PyQt4.QtOpenGL import *
 #from OpenGL.GLU import *
 #from OpenGL.GL.framebufferobjects import *
-from OpenGL.GL import *
+# from OpenGL.GL import *
 
 class MonoplotterMainWindow(QtWidgets.QMainWindow):
     
@@ -82,7 +79,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         self.qgl_window = QGLMonoplotter(pointBuffer, picture_name, ParamPose)
         
         img = QImage(picture_name)
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = resolution.height()/1.5#2
         self.ratio = img.width()/float( img.height())
@@ -154,7 +151,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.qgl_window.color = (0,1,1)
             self.ui.widgetCyan.setStyleSheet("background-color : rgba(0, 255, 255, 100);")
         
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def analysis(self):
         
@@ -494,8 +491,8 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
 
             # Close DataSource
             outDataSource.Destroy()
-            ret = QMessageBox.question(self, "Load Footprint", "Do you want to load the footprint on the canvas?", QMessageBox.Yes| QMessageBox.No)
-            if ret == QMessageBox.Yes : 
+            ret = QMessageBox.question(self, "Load Footprint", "Do you want to load the footprint on the canvas?", QMessageBox.StandardButton.Yes| QMessageBox.StandardButton.No)
+            if ret == QMessageBox.StandardButton.Yes : 
                 self.iface.addVectorLayer(outShapefile, filename, "ogr")
             
 #        #Generate visibility mask
@@ -690,7 +687,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
         
     def changeTransparency(self, val):
         self.qgl_window.transparency = val*20
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def closeEvent(self, event):
         namePath = os.path.realpath(__file__)
@@ -727,16 +724,16 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
     def stopMeasure3D(self):
         self.ui.measure3D.setChecked(False)
         self.qgl_window.lineEditBuffer = []
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         
         
     def openLabelSettings(self):
         # Control the settings of label in the monoplotter.
         # Label are drawn according to the current state inside the canvas
         self.labelSettingWindow = label_dialog(self.labelSetting)
-        self.labelSettingWindow.setWindowModality(Qt.ApplicationModal)
+        self.labelSettingWindow.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.labelSettingWindow.show()
-        result = self.labelSettingWindow.exec_()
+        result = self.labelSettingWindow.exec()
         if result == 1:
             self.labelSetting[0] = self.labelSettingWindow.ui.colorButton.palette().color(1)
             self.labelSetting[1] = self.labelSettingWindow.font
@@ -744,7 +741,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.labelSetting[3] = self.labelSettingWindow.ui.doubleSpinBox_2.value()
             self.qgl_window.labelSettings = self.labelSetting
             self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
     
     def getOrtho(self, forPolygon = False):
         
@@ -1174,7 +1171,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
             self.orthoSaveInstance.show()
             self.orthoSaveInstance.resize(totPixE,totPixN)
             self.orthoSaveInstance.resizeGL(totPixE,totPixN)
-            self.orthoSaveInstance.updateGL()
+            self.orthoSaveInstance.update()
         self.orthoSaveInstance.saveOrtho(name)
         self.orthoSaveInstance.close()
         
@@ -1322,7 +1319,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
 
         self.qgl_window.purpleCross(-x,value,y)
         self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         self.qgl_window.notUpdate = True
         
         
@@ -1459,7 +1456,7 @@ class MonoplotterMainWindow(QtWidgets.QMainWindow):
                         self.qgl_window.colorPolygon.append(color)
                     
         self.qgl_window.notUpdate = False
-        self.qgl_window.updateGL()
+        self.qgl_window.update()
         
     def getIndexSizeColorCategorie(self,value, categorie):
         indice = -1

@@ -1,12 +1,12 @@
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
 from qgis.core import *
 from .D3View import D3_view
-from .ui_d3_virtual import Ui_D3
+from .ui.ui_d3_virtual import Ui_D3
 from numpy import arctan, arctan2, sqrt, pi, cos, sin, array, zeros, dot, linalg, arcsin
 # FIXME QtXml is no longer supported.
-from PyQt5 import QtXml
+from PyQt6 import QtXml
 
 try:
     QString = unicode
@@ -30,7 +30,7 @@ class Virtual3DMainWindow( QMainWindow):
         self.img_name = img_name.split(".")[0]
         self.picture_name = picture_name
 
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = resolution.height()/2
         self.imgSize = [img.width(), img.height()]
@@ -53,17 +53,17 @@ class Virtual3DMainWindow( QMainWindow):
     def sliderroll(self, val):
         # Control the roll of the picture
         self.D3_instance.roll = val/100.0
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
         
     def sliderFocal(self, val):
         # Control the focal of the picture
         self.D3_instance.FOV = val
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
         
     def sliderTransparency(self, val):
         #Control the transparency of the DEM
         self.D3_instance.transparency = val
-        self.D3_instance.updateGL()
+        self.D3_instance.update()
 
     def closeEvent(self, event):    
         # When the window is closed, the parameters get fixed and are used for the monoplotter
@@ -166,12 +166,12 @@ class Virtual3DMainWindow( QMainWindow):
             return
         file=QFile(fName)
 
-        if (not file.open(QIODevice.ReadOnly | QIODevice.Text)):
+        if (not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text)):
             QMessageBox.warning(self, 'Application', QString('Cannot read file %1:\n%2.').arg(fname).arg(file.errorString()))
             return False
         else:
             # FIXME QtXml is no longer supported.
-            doc = QtXml.QDomDocument("EnvironmentML");
+            doc = QtXml.QDomDocument("EnvironmentML")
             if(not doc.setContent(file)):
                 file.close()
                 QMessageBox.warning(self,"Error","Could not parse xml file.")
@@ -253,7 +253,7 @@ class Virtual3DMainWindow( QMainWindow):
                     self.D3_instance.FOV = FOV
                     self.D3_instance.pos = pos
                     self.D3_instance.lookat = lookat
-                    self.D3_instance.updateGL()
+                    self.D3_instance.update()
                     
     def dotIt(self):
         #This function creates funny words in your DEM

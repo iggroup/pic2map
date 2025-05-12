@@ -13,19 +13,16 @@ from __future__ import print_function
 
 from builtins import str
 from past.utils import old_div
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtOpenGLWidgets import QOpenGLWidget
 from OpenGL.GL import *
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtOpenGL import *
 from OpenGL.GLU import *
 from numpy import sqrt, cos, sin, array, pi, linalg, dot
-from OpenGL.GL.ARB.vertex_buffer_object import *
-from OpenGL.arrays import ArrayDatatype as ADT
 
 
-class QGLMonoplotter(QGLWidget):
+class QGLMonoplotter(QOpenGLWidget):
     blow = pyqtSignal(list)
     pinkCrossSignal = pyqtSignal(list)
     def __init__(self, pointBuffer, picture_name, ParamPose, parent = None):
@@ -336,15 +333,15 @@ class QGLMonoplotter(QGLWidget):
          glEnableClientState( GL_VERTEX_ARRAY )
          if not self.useOrtho:
              glEnableClientState( GL_NORMAL_ARRAY )
-         glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, self.m_indicebuffer)
-         glBindBufferARB( GL_ARRAY_BUFFER_ARB, self.m_nVBOVertices )
+         glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, self.m_indicebuffer)
+         glBindBuffer( GL_ARRAY_BUFFER, self.m_nVBOVertices )
          glVertexPointer(3,GL_FLOAT,0,None)
-         glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 )
+         glBindBuffer( GL_ARRAY_BUFFER, 0 )
          
          if not self.useOrtho:
-             glBindBufferARB( GL_ARRAY_BUFFER_ARB, self.m_normalbuffer )
+             glBindBuffer( GL_ARRAY_BUFFER, self.m_normalbuffer )
              glNormalPointer(GL_FLOAT,0,None)
-             glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 )
+             glBindBuffer( GL_ARRAY_BUFFER, 0 )
          
          glDrawElements(GL_TRIANGLE_STRIP,self.count,GL_UNSIGNED_INT,None)
          
@@ -570,7 +567,6 @@ class QGLMonoplotter(QGLWidget):
         self.textureBack = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, self.textureBack)
         img = QImage(self.picture_name)
-        img = QGLWidget.convertToGLFormat(img)
         glTexImage2D(GL_TEXTURE_2D, 0, 3, img.width(), img.height(),
                 0, GL_RGBA, GL_UNSIGNED_BYTE, img.bits().asstring(img.byteCount()))
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR)
@@ -583,23 +579,23 @@ class QGLMonoplotter(QGLWidget):
         self.z_rot = 0
         self.resolution = self.numpy_verts[0,2]-self.numpy_verts[1,2]
 
-        temp = glGenBuffersARB(3)
+        temp = glGenBuffers(3)
         self.m_nVBOVertices = int(temp[0])           
         self.m_indicebuffer = int(temp[1])        
         self.m_normalbuffer = int(temp[2]) 
-        glBindBufferARB( GL_ARRAY_BUFFER_ARB, self.m_nVBOVertices )
-        glBufferDataARB( GL_ARRAY_BUFFER_ARB, self.numpy_verts, GL_STATIC_DRAW_ARB )
+        glBindBuffer( GL_ARRAY_BUFFER, self.m_nVBOVertices )
+        glBufferData( GL_ARRAY_BUFFER, self.numpy_verts, GL_STATIC_DRAW )
 
-        glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 )
-        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, self.m_indicebuffer)
-        glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, self.m_indices, GL_STATIC_DRAW_ARB )
-        glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0) 
+        glBindBuffer( GL_ARRAY_BUFFER, 0 )
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, self.m_indicebuffer)
+        glBufferData( GL_ELEMENT_ARRAY_BUFFER, self.m_indices, GL_STATIC_DRAW )
+        glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0) 
         if not self.useOrtho:
             #There is the possibility to see the DEM if the shadow option was chosen (no ortho-photo)
             
-            glBindBufferARB( GL_ARRAY_BUFFER_ARB, self.m_normalbuffer )
-            glBufferDataARB( GL_ARRAY_BUFFER_ARB, self.m_normal, GL_STATIC_DRAW_ARB )
-            glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 )
+            glBindBuffer( GL_ARRAY_BUFFER, self.m_normalbuffer )
+            glBufferData( GL_ARRAY_BUFFER, self.m_normal, GL_STATIC_DRAW )
+            glBindBuffer( GL_ARRAY_BUFFER, 0 )
         self.count = len(self.m_indices)
 
         if self.pos is None:

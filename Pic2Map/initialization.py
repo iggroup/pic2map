@@ -11,14 +11,13 @@
 """
 
 from builtins import str
-import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from .ui_disp_ini import Ui_Dialog
+from PyQt6 import QtWidgets
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from .ui.ui_disp_ini import Ui_Dialog
 import webbrowser
 import os, tempfile
 from osgeo import gdal
@@ -99,7 +98,7 @@ class Initialization_dialog(QtWidgets.QDialog):
         
     def center(self):
         qr = self.frameGeometry()
-        cp = QtWidgets.QDesktopWidget().availableGeometry().center()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
     

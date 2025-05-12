@@ -13,13 +13,12 @@ from __future__ import division
 
 from builtins import str
 from past.utils import old_div
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from PIL import Image
 from PIL.ExifTags import TAGS
-from .ui_exif2 import Ui_Exif2
+from .ui.ui_exif2 import Ui_Exif2
 from qgis.core import *
 from qgis.gui import *
 from numpy import sqrt
@@ -48,7 +47,7 @@ class ExifInfo(QDialog):
             except ValueError:
                 QMessageBox.warning(self, "Error","Float format not valid")
             else:
-                FocalLengthMM = old_div(self.FocalLength[0],self.FocalLength[1])
+                FocalLengthMM = old_div(self.FocalLength.numerator,self.FocalLength.denominator)
                 focalPixel = round(old_div(FocalLengthMM,sensorDiagFloat)*self.diag,2)
                 self.ui_exif_info.lineFocalPixel.setText(str(focalPixel))
                 self.fixFocalSignal.emit(focalPixel)

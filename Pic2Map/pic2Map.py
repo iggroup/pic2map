@@ -10,26 +10,20 @@
 """
 from __future__ import division
 from __future__ import absolute_import
-from builtins import str
 from builtins import object
 from past.utils import old_div
-import qgis.core
 from qgis.core import *
 from qgis.gui import *
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtGui import *
+from PyQt6.QtCore import *
+from PyQt6.QtWidgets import *
 from .buffers import Buffers
 from .getGCPMainWindow import GetGCPMainWindow
 from .initialization import Initialization_dialog
-from .virtual3DMainWindow import Virtual3DMainWindow
 from .monoplotterMainWindow import MonoplotterMainWindow
 from .drapping import drappingMain
-from .ortho import viewOrtho_class
 from .checkOpenGLVersion import CheckVersion
 s = QSettings()
-import sys, os
 from PIL import Image
 # initialize Qt resources from file resouces.py
 from . import resources
@@ -47,10 +41,10 @@ class Pic2Map(object):
     def checkRequirments(self):
         #Check the openGL version
         ##ex = CheckVersion()
-        ##ex.updateGL()
+        ##ex.update()
         ##self.isSupported = ex.isSupported
         ex = CheckVersion()
-        ex.updateGL()
+        ex.update()
         # Opengl 3.0 is required for Framebuffer
         self.isFrameBufferSupported =ex.isSupported
         
@@ -93,7 +87,7 @@ class Pic2Map(object):
         # the ortho-image if used
         # the approach chosen for georeferencing
         self.ini = Initialization_dialog(self.iface)
-        self.ini.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.ini.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         #self.ini.setWindowModality(Qt.WindowModal)
         self.ini.ui.buttonBox.accepted.connect(self.startSequence)
         self.ini.show()
@@ -197,7 +191,7 @@ class Pic2Map(object):
                                             self.isFrameBufferSupported,
                                             Xmat,
                                             Ymat)#20150923
-            self.drappingInstance.setWindowModality(Qt.ApplicationModal)
+            self.drappingInstance.setWindowModality(Qt.WindowModality.ApplicationModal)
             self.drappingInstance.show()
             
     def goToMonoplotter(self):
@@ -235,7 +229,7 @@ class Pic2Map(object):
                                                 self.isFrameBufferSupported,
                                                 self.demMax, self.demMin)#
         self.monoplotter.show()
-        self.monoplotter.qgl_window.updateGL()
+        self.monoplotter.qgl_window.update()
         self.monoplotter.openOrtho.connect(self.openOrthoWidget)
         self.monoplotter.qgl_window.blow.connect(self.clickOnMonoplotter)
         self.monoplotter.clearMapTool.connect(self.clearMapTool)
@@ -265,7 +259,7 @@ class Pic2Map(object):
             if hasattr(self, 'monoplotter'):
                 if hasattr(self.monoplotter.qgl_window, 'lineEditBuffer'):                     
                         self.monoplotter.qgl_window.lineEditBuffer = []
-                        self.monoplotter.qgl_window.updateGL()
+                        self.monoplotter.qgl_window.update()
 
     def runGCPMainWindowFromVirtual3D(self):
             self.virtual3DMainWindow.close()
@@ -278,7 +272,7 @@ class Pic2Map(object):
             self.canvas.setMapTool(self.clickTool)
             # create main window
             self.gcpMainWindow = GetGCPMainWindow(self.iface, self.buffers, self.picture_name,self.pathToData,self.isFrameBufferSupported, self.crs)
-            self.gcpMainWindow.setWindowFlag(Qt.WindowStaysOnTopHint)
+            self.gcpMainWindow.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
             # show the Main Window
             self.gcpMainWindow.show()
             # load the picture in the central widget
@@ -290,7 +284,7 @@ class Pic2Map(object):
             self.gcpMainWindow.resetToolSignal.connect(self.resetClickTool)
             self.gcpMainWindow.setCanvasExtentSignal.connect(self.setCanvasExtent)
             self.clickTool.canvasClicked.connect(self.newCanvasGCP)
-            self.gcpMainWindow.GoToMonoplotterButton.triggered.connect(self.goToMonoplotter)
+            # self.gcpMainWindow.GoToMonoplotterButton.triggered.connect(self.goToMonoplotter)
             self.gcpMainWindow.clearMapTool2.connect(self.clearMapTool)
             
             if fromVirtual3D:
@@ -347,7 +341,7 @@ class Pic2Map(object):
         #####
         im = Image.open(picName)
         width, height = im.size
-        resolution = QDesktopWidget().screenGeometry()
+        resolution = QGuiApplication.primaryScreen().geometry()
         size = [0,0]
         size[1] = old_div(resolution.height(),2)
         size[0] = int(float(float(width)/float(height))*size[1])
@@ -376,7 +370,7 @@ class Pic2Map(object):
             # This function is used at initialization.
             # Arrays are created here for openGL. The normal calculation can take some time (ca. 1sec for 100'000 pixels)
             self.buffers = Buffers(self.DEM_name, self.dem_box, self.useOrtho, self.ortho_name, self.ortho_box)
-            self.buffers.getBuffer()
+            # self.buffers.getBuffer()
             self.buffers.close()
             
     def clickOnMonoplotter(self,customEvent):
@@ -410,7 +404,7 @@ class Pic2Map(object):
                         # a new point is added if the left button is clicked
                         if button == Qt.LeftButton:
                             self.monoplotter.qgl_window.lineEditBufferAppend()
-                            self.monoplotter.qgl_window.updateGL()
+                            self.monoplotter.qgl_window.update()
                         # The line edition ends if the right button is clicked
                         elif button == Qt.RightButton:
                             self.monoplotter.qgl_window.lineEditBuffer = []
@@ -421,7 +415,7 @@ class Pic2Map(object):
                         # a new point is added if the left button is clicked
                         if button == Qt.LeftButton:
                             self.monoplotter.qgl_window.lineEditBufferAppend()
-                            self.monoplotter.qgl_window.updateGL()
+                            self.monoplotter.qgl_window.update()
                         # The line edition ends if the right button is clicked
                         elif button == Qt.RightButton:
                             self.monoplotter.qgl_window.lineEditBuffer = []
@@ -449,23 +443,23 @@ class Pic2Map(object):
                         
                         self.cTool.canvasReleaseEvent(event2)
                         self.monoplotter.qgl_window.lineEditBufferAppend()
-                        self.monoplotter.qgl_window.updateGL()
+                        self.monoplotter.qgl_window.update()
                         self.cTool.activate()
                         
                     # update window
                 # the line is cleared if the right button is clicked
                 elif button == Qt.RightButton:
                     self.monoplotter.qgl_window.lineEditBuffer = []
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
         else:
             if self.monoplotter.isMeasuring3D:
                 if button == Qt.LeftButton:
                     self.monoplotter.qgl_window.lineEditBufferAppend()
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
                     self.monoplotter.dlgMeasure3D.addPoint(x,y)
                 if button == Qt.RightButton:
                     self.monoplotter.qgl_window.lineEditBuffer = []
-                    self.monoplotter.qgl_window.updateGL()
+                    self.monoplotter.qgl_window.update()
                     self.monoplotter.dlgMeasure3D.removePath()
     
     def activateMeasurement(self):
