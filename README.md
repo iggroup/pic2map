@@ -8,7 +8,7 @@ This repository is a fork from the deprecated https://github.com/tproduit/pic2ma
 
 **Key features**
 - **Pose estimation** : Computes the location and orientation of a picture with 3D Ground Control Points. The orientation can be saved in a Google Earth format.
-- **Map-Picture interactions** : Provides the interaction between the map and the picture through a Digital Elevation Model. Vector layers can be overlaid on the picture, geographic vector layer can be digitized directly in the picture, the picture can be "orthorectified".
+- **Map-Picture interactions** : Provides the interaction between the map and the picture through a Digital Elevation Model. Vector layers can be overlaid on the picture, geographic vector layer can be digitized directly in the picture, the picture can be "orthorectified". *These functionalities were basede on a deprecated Home Made 3D interface, they aren't available anymore. In the future, as soon as funding will be found, they will be migrated using the QGIS 3D interface*
 
 ## Funding
 This project is currently seeking funding to improve and update the plugin. If you are a regular user please consider to contact us (https://github.com/tproduit ).
@@ -23,6 +23,7 @@ In Open Source Geospatial Research and Education Symposium (OGRS), 2012*.
 ### Developments
 - The initial development was supported by the EPFL, the Swiss National Park.
 - The migration to QGIS3 was performed by *Ministère des Forêts, de la Faune et des Parcs, Québec*.
+- The migration to QT6 and the implementation of a more rigorous 3D georeferencer was funded by http://www.chartasrl.eu, SITN, HEIG-VD, IG group SA and Andreas Neumann, 
 - The project is maintained and updated regularly by IG group. Feedback and contributions are appreciated !
 
 ### Contributors:
