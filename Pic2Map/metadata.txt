@@ -8,13 +8,13 @@ description=Compute the 3D orientation of a picture and provide the interaction 
 about=Pic2map has two goals. First, it is used to compute the location and orientation of a picture with 3D Ground Control Points. The orientation can be saved in a Google Earth format. Second, it provides the interaction between the map and the picture through a Digital Elevation Model. Vector layers can be overlaid on the picture, geographic vector layer can be digitized directly in the picture, the picture can be "orthorectified".
 The plugin requires qt opengl python support (on Debian and derivates: python-qt4-gl). It was successfully tested in QGIS 64bits on Ubuntu and Windows.
 version=version 4.0
-tracker=https://github.com/tproduit/pic2map/issues
-repository=https://github.com/tproduit/pic2map/
+tracker=https://github.com/iggroup/pic2map/issues/
+repository=hhttps://github.com/iggroup/pic2map/
 ; end of mandatory metadata
 
 ; start of optional metadata
 category=Raster
-homepage=https://github.com/tproduit/pic2map/blob/master/README.md
+homepage=https://github.com/iggroup/pic2map
 changelog=
     4.0 - Python libraries now use requirements.txt file; Update georeferencer to the smapshot version; Support for QT6; Various bug fixes
     3.3 - NEW PYTHON LIBRARY TO INSTALL : piexif - restructuration of the pose estimation and new small features
